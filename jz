@@ -153,7 +153,6 @@ if [ -z "$jee_version" ]; then
 fi
 
 if [[ $(expr index "$project_name" .) != "0" ]] ; then
-echo "IN HERE"
     # project-name contains dot and thus a group-id
     groupid=$(echo "$project_name" | rev | cut -d"." -f2-  | rev)
     artifactid=$(echo "$project_name" | rev | cut -d"." -f1  | rev)
