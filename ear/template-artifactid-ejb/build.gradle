@@ -1,0 +1,10 @@
+apply plugin: 'java'
+
+dependencies {
+	compileOnly 'javax:javaee-api'
+	compile project(":template-artifactid-lib")
+}
+
+jar {
+	archiveName 'template-artifactid.jar'
+}

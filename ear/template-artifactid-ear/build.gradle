@@ -1,0 +1,19 @@
+apply plugin: 'ear'
+apply plugin: 'eclipse-wtp'
+
+dependencies {
+	deploy project(path:':template-artifactid-war', configuration:'archives')
+	deploy project(':template-artifactid-ejb')
+	earlib project(':template-artifactid-lib')
+}
+
+ear {
+	archiveName 'template-artifactid.ear'
+}
+
+task deployEar(type: Copy, dependsOn: 'ear') {
+	dependsOn 'build'
+    description 'Copy the artifact to $DEPLOY_TO'
+	from ear.archivePath
+	into "${System.env.DEPLOY_TO}"
+}

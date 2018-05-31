@@ -1,0 +1,20 @@
+allprojects {
+	apply plugin: 'maven'
+	apply plugin: 'java'
+	
+	group = 'template-groupid'
+	version = '1.0-SNAPSHOT'
+
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		compileOnly 'javax:javaee-api:7.0'
+		testCompile 'junit:junit:4.12'
+		testCompile 'org.mockito:mockito-core:2.10.0'
+	}
+}
