@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $JZ_TRACE ]] && set -x
+source "$PLUGIN_PATH/common/functions"
+
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+list_templates() {
+    # TODO: Print nice description for templates
+    find $PLUGIN_PATH/project/templates -maxdepth 1 -type d -print | tail -n +2 | rev | cut -d'/' -f 1 | rev
+}
+
+usage() {
+    templates=$(list_templates | paste -sd "|" -)
+    echo "Usage: jz project:create [groupid.]artifactid [OPTIONS]"
+    echo ""
+    echo "Create a Java EE project from a template"
+    echo ""
+    echo "Options:"
+    echo "    --jee-version=7|8 (default: 7)"
+    echo "    --template=$templates (default: war)"
+    echo "    --st (creates a system-test project; same as --template=st)"
+    echo ""
+    echo "Example:"
+    echo "$ jz project:create jz.myapp"
+    echo "    This will use some defaults (*) and create a project that..."
+    echo "    - is Java EE 7-compliant (*),"
+    echo "    - packages as a WAR archive (*),"
+    echo "    - has group-id \"jz\","
+    echo "    - has artifact-id \"myapp\","
+    echo "    - and builds with Gradle and Maven. (*)"
+}
+
+scaffold() {
+    local groupid=$1
+    local artifactid=$2
+    local template=$3
+    
+    cp -r $PLUGIN_PATH/project/templates/$template $artifactid
+
+    find $artifactid -type d -name "packagename" | while read dir; do
+        # Derive packagenames from groupid/artifactid
+        local parent=$(dirname $dir)
+        local artifact_dir="${artifactid//-/}"
+        local package_dirs="${groupid//.//}/${artifact_dir}"
+        local package_path="$parent/$package_dirs"
+        mkdir -p "$package_path"
+        mv $dir/* $package_path/ || true
+        rm -rf $dir
+    done
+
+    # Fix packagenames in Java-code
+    local java_package_name="${groupid}.${artifactid//-/}"
+    find $artifactid -type f \( -name "*.java" -o -name "build.gradle" \) -exec sed -i "s/packagename/${java_package_name}/g" {} \;
+
+    # Fix subproject folder-names
+    find $artifactid -type d -name "template-artifactid-*" -print0
+    find $artifactid -type d -name "template-artifactid-*" | while read file; do \
+        #dir=$(dirname $f)
+        #file=$(basename $f)
+        #rename "s/template-artifactid-(.*)\$/$artifactid-\$1/" $f
+        newfile=${file/template-artifactid/$artifactid}
+        mv $file $newfile
+    done;
+
+    # Set groupid/artifactid in pom.xml/build.gradle
+    find $artifactid -type f -exec sed -i "s/template-artifactid/${artifactid}/g" {} \;
+    find $artifactid -type f -exec sed -i "s/template-groupid/${groupid}/g" {} \;
+
+    if ! [[ -v JZ_CUSTOM_ROOT ]]; then
+        touch .jeeez
+    fi
+
+    if [[ "$artifactid" == *-st ]]; then
+        # This is a system-test project
+        # Fint the main project this belongs to
+        parentid=${artifactid%-st}
+        if [ -d "$parentid" ]; then
+            parentpath=$(realpath $parentid)
+            log_info "Found parent-project @ $parentpath"
+            echo "PROJECT=$parentpath" >> $artifactid/.env
+            echo "COMPOSE_PROJECT_NAME=$parentid" >> $artifactid/.env
+            find $parentpath -type f -exec sed -i "s/appname/${parentid}/g" {} \;
+            find $artifactid -type f -exec sed -i "s/appname/${parentid}/g" {} \;
+        else
+            log_err "Expected a main-project named '$parentid' but unable to find."
+            exit 1
+        fi
+
+        log_success "Created system-test project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
+        log_success "Run them with 'cd $artifactid; ./gradlew systemTestInDockerEnv'."
+        log_warn "This project only works in conjunction with the project named '$parentid'."
+        log_warn "Make sure to run './gradlew build' on it at least once to generate the artifact to deploy."
+    else
+        log_success "Created a project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
+        log_success "Build & run it with 'cd $artifactid; ./run_docker.sh'."
+        log_success "Open http://localhost/$artifactid/resources/health after the sever is started."
+    fi
+    #tree -C $artifactid/
+}
+
+plugin_main_cmd() {
+
+    case $1 in
+        -h|--help)
+        usage
+        exit 0
+        ;;
+    esac
+
+    if [ "$1" == "" ]; then
+        usage
+        exit 1
+    fi
+
+    project_name=$1
+    shift
+
+    while [ $# -gt 0 ]; do
+    case "$1" in
+        --jee-version=*)
+        jee_version="${1#*=}"
+        ;;
+        --template=*)
+        template="${1#*=}"
+        ;;
+        --st)
+        # If we are generating a system-test project, append "-st" to project-name
+        project_name="${project_name}-st"
+        template="st"
+        ;;
+        *)
+        log_err "Invalid argument"
+        exit 1
+    esac
+    shift
+    done
+
+    if [ -z "$template" ]; then
+        template="war"
+    fi
+
+    if [ -z "$jee_version" ]; then
+        jee_version="7"
+    fi
+
+    if [ -z "$jee_version" ]; then
+        jee_version="7"
+    fi
+
+    if [[ $(expr index "$project_name" .) != "0" ]] ; then
+        # project-name contains dot and thus a group-id
+        groupid=$(echo "$project_name" | rev | cut -d"." -f2-  | rev)
+        artifactid=$(echo "$project_name" | rev | cut -d"." -f1  | rev)
+    else
+        groupid="jz"
+        artifactid="$project_name"
+    fi
+
+    if ! [ -d $PLUGIN_PATH/project/templates/$template ]; then
+        log_err "No template with name '$template'"
+        exit 1
+    fi
+
+    scaffold $groupid $artifactid $template
+}
+
+plugin_main_cmd "$@"

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $JZ_TRACE ]] && set -x
+source "$PLUGIN_PATH/common/functions"
+
+usage() {
+    echo "Usage: jz database:use postgresql|oracle"
+    echo ""
+    echo "???"
+}
+
+plugin_main_cmd() {
+
+    if [ "$1" == "" ]; then
+        usage
+        exit 1
+    fi
+
+    database_type=$1
+    shift
+
+    if ! [[ -v JZ_CUSTOM_ROOT ]]; then
+        log_err "'.jeeez' not found. Expected to find it in any parent-folder."
+        log_err "Maybe you never created a project via 'jz project:create'?"
+        exit 1
+    fi
+
+    cp -r $PLUGIN_PATH/database/resources/$database_type $JZ_CUSTOM_ROOT/
+    log_success "Created folder '$JZ_CUSTOM_ROOT/$database_type' with scripts to start the database as a docker container."
+    log_info "Run 'docker-compose up' from within the folder to use docker-compose."
+    log_info "Run './run.sh' from within the folder to use plain docker."
+}
+
+plugin_main_cmd "$@"

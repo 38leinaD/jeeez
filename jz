@@ -1,169 +1,138 @@
-#!/bin/bash
-set -e
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+#!/usr/bin/env bash
+set -o pipefail # pipe fails with first failing command
+set -o errexit # exit script on failed command
 
-list() {
-    find $DIR -maxdepth 1 -type d -print
-}
+shopt -s nullglob
 
-info() {
-    echo -e "$1"
-}
+export JZ_ROOT=${JZ_ROOT:-"$(dirname "$(readlink -f "$0")")"}
+export PLUGIN_PATH=${PLUGIN_PATH:="$JZ_ROOT/plugins"}
 
-error() {
-    echo -e "${RED}$1${NC}"
-}
+source "$PLUGIN_PATH/common/functions"
+parse_args "$@"
 
-warn() {
-    echo -e "${YELLOW}$1${NC}"
-}
+[[ $JZ_TRACE ]] && set -x
 
-usage() {
-    info "jeeez (short: jz) - command-line Java EE project scaffolding tool"
-    info "Usage: $(basename $0) [groupid.]artifactid [options]"
-    info ""
-    info "    --jee-version: default: 7"
-    info ""
-    info "Example: $(basename $0) de.dplatz.myapp"
-    info "    This will use the defaults and create a project that..."
-    info "    - is Java EE 7-compliant,"
-    info "    - packages as a WAR archive,"
-    info "    - has group-id \"de.dplatz\","
-    info "    - has artifact-id \"myapp\","
-    info "    - and builds with Gradle and Maven."
-}
+# Find project-local config-file first (because base script defines variables that might be based on project-specific scripts)
+path_node=$(pwd)
 
-scaffold() {
-    local groupid=$1
-    local artifactid=$2
-    local template=$3
-    
-    cp -r $DIR/$template $artifactid
-
-    find $artifactid -type d -name "packagename" | while read dir; do
-        # Derive packagenames from groupid/artifactid
-        local parent=$(dirname $dir)
-        local artifact_dir="${artifactid//-/}"
-        local package_dirs="${groupid//.//}/${artifact_dir}"
-        local package_path="$parent/$package_dirs"
-        mkdir -p "$package_path"
-        mv $dir/* $package_path/ || true
-        rm -rf $dir
-    done
-
-    # Fix packagenames in Java-code
-    local java_package_name="${groupid}.${artifactid//-/}"
-    find $artifactid -type f \( -name "*.java" -o -name "build.gradle" \) -exec sed -i "s/packagename/${java_package_name}/g" {} \;
-
-    # Fix subproject folder-names
-    find $artifactid -type d -name "template-artifactid-*" -print0
-    find $artifactid -type d -name "template-artifactid-*" | while read file; do \
-        #dir=$(dirname $f)
-        #file=$(basename $f)
-        #rename "s/template-artifactid-(.*)\$/$artifactid-\$1/" $f
-        newfile=${file/template-artifactid/$artifactid}
-        mv $file $newfile
-    done;
-
-    # Set groupid/artifactid in pom.xml/build.gradle
-    find $artifactid -type f -exec sed -i "s/template-artifactid/${artifactid}/g" {} \;
-    find $artifactid -type f -exec sed -i "s/template-groupid/${groupid}/g" {} \;
-
-    if [[ "$artifactid" == *-st ]]; then
-        # This is a system-test project
-        # Fint the main project this belongs to
-        parentid=${artifactid%-st}
-        if [ -d "$parentid" ]; then
-            parentpath=$(realpath $parentid)
-            info "Found parent-project @ $parentpath"
-            echo "PROJECT=$parentpath" >> $artifactid/.env
-            echo "COMPOSE_PROJECT_NAME=$parentid" >> $artifactid/.env
-            find $parentpath -type f -exec sed -i "s/appname/${parentid}/g" {} \;
-            find $artifactid -type f -exec sed -i "s/appname/${parentid}/g" {} \;
-        else
-            error "Expected a main-project named '$parentid' but unable to find."
-            exit 1
-        fi
-
-        info "Created project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
-        info "Run them with 'cd $artifactid; ./gradlew systemTestInDockerEnv'."
-        warn "This project only works in conjunction with the project named '$parentid'."
-        warn "Make sure to run './gradlew build' on it at least once to generate the artifact to deploy."
+while true; do
+    if [[ $path_node == / ]]; then
+        # nothing found
+        break
+    elif [ -f "${path_node}/.jeeez" ]; then
+        # found
+        log_debug "Sourced specific config from $path_node/.jeeez"
+        source $path_node/.jeeez
+        export JZ_CUSTOM_RC=$path_node/.jeeez
+        export JZ_CUSTOM_ROOT=$path_node
+        break
     else
-        info "Created a system-test project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
-        info "Build & run it with 'cd $artifactid; ./run_docker.sh'."
-        info "Open http://localhost/$artifactid/resources/health after the sever is started."
+        # go up
+        path_node="$(dirname "$path_node")"
     fi
-    #tree -C $artifactid/
-}
+done
 
-case $1 in
-    -l|--list)
-    list
-    exit 0
+case "$(uname -s)" in
+  CYGWIN*)
+    export JZ_DISTRO=${JZ_DISTRO:="cygwin"}
     ;;
-    -h|--help)
-    usage
-    exit 0
+  *)
+    export JZ_DISTRO=${JZ_DISTRO:="linux"}
     ;;
 esac
 
-if [ "$1" == "" ]; then
-    usage
-    exit 1
+[[ -f ~/.jeeez/config ]] && source ~/.jeeez/config
+[[ -d ~/.jeeez ]] && for f in ~/.jeeez/config-$JZ_DISTRO/*; do source "$f"; done
+[[ -f $JZ_ROOT/.jeeez-$JZ_DISTRO ]] && source "$JZ_ROOT/.jeeez-$JZ_DISTRO"
+
+[[ $JZ_TRACE ]] && set -x
+export JZ_LOGS=~/.jeeez/logs
+[[ ! -d $JZ_LOGS ]] && mkdir -p $JZ_LOGS
+
+export JZ_CACHE=~/.jeeez/cache
+[[ ! -d $JZ_LJZ_CACHEOGS ]] && mkdir -p $JZ_CACHE
+
+export JZ_HISLOG=$JZ_LOGS/history.log
+
+
+if [[ $JZ_DISTRO == "cygwin" ]]; then
+  export BATCH_TYPE=${BATCH_TYPE:-"cmd"}
+else
+  export BATCH_TYPE=${BATCH_TYPE:-"sh"}
 fi
 
-project_name=$1
-shift
 
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --jee-version=*)
-      jee_version="${1#*=}"
-      ;;
-    --template=*)
-      template="${1#*=}"
-      ;;
-    --st)
-      # If we are generating a system-test project, append "-st" to project-name
-      project_name="${project_name}-st"
-      template="st"
-      ;;
-    *)
-      error "Invalid argument"
-      exit 1
-  esac
-  shift
+args=("$@")
+
+for arg in "$@"; do
+  if [[ "$arg" =~ ^--.* ]]; then
+    shift 1
+  else
+    break
+  fi
 done
 
-if [ -z "$template" ]; then
-    template="war"
-fi
+! has_tty && JZ_QUIET_OUTPUT=1
 
-if [ -z "$jee_version" ]; then
-    jee_version="7"
-fi
+execute_jz_cmd() {
 
-if [ -z "$jee_version" ]; then
-    jee_version="7"
-fi
+  local PLUGIN_NAME="$1"
+  local PLUGIN_CMD="$2"
+  local implemented=0; local script
+  local argv=("$@")
 
-if [[ $(expr index "$project_name" .) != "0" ]] ; then
-    # project-name contains dot and thus a group-id
-    groupid=$(echo "$project_name" | rev | cut -d"." -f2-  | rev)
-    artifactid=$(echo "$project_name" | rev | cut -d"." -f1  | rev)
-else
-    groupid="de.dplatz"
-    artifactid="$project_name"
-fi
+  if [[ -x $PLUGIN_PATH/$PLUGIN_NAME/subcommands/default ]]; then
+    "$PLUGIN_PATH/$PLUGIN_NAME/subcommands/default" "$@"
+    implemented=1
+  elif [[ -x $PLUGIN_PATH/${PLUGIN_NAME%%:*}/subcommands/${1#*:} ]]; then
+    shift 1
+    "$PLUGIN_PATH/${PLUGIN_NAME%%:*}/subcommands/${PLUGIN_NAME#*:}" "$@"
+    implemented=1
+  fi
 
-if ! [ -d $DIR/$template ]; then
-    error "No template with name '$template'"
+  if [[ $implemented -eq 0 ]];then
+    for script in $PLUGIN_PATH/*/commands; do
+      set +e; $script "$@" ; exit_code=$? ; set -e
+      if [[ "$exit_code" -eq 1 ]]; then
+        continue
+      fi
+      implemented=1
+    done
+  fi
+
+  if [[ "$implemented" -eq 0 ]]; then
+    log_warn "\`$*\` is not a valid command."
+    log_warn "See \`jz help\` for a list of available commands."
     exit 1
-fi
+  fi
+}
 
-scaffold $groupid $artifactid $template
+case "$1" in
+  help|'')
+    export LC_ALL=C # so sort will respect non alpha characters
+    ALL_PLUGIN_COMMANDS=$(find -L "$PLUGIN_PATH/" -name commands 2> /dev/null || true)
+
+    for plugin_command in $ALL_PLUGIN_COMMANDS;do
+        PLUGIN_COMMANDS+="$plugin_command "
+    done
+    echo "JEEEZ (short: jz) is an simple but opinionated command-line Java EE-project scaffolding tool"
+    echo "Usage: jz PLUGIN:COMMAND [OPTIONS]"
+    echo ""
+    echo "Commands:"
+    echo ""
+
+    for plugin_command in $PLUGIN_COMMANDS; do
+      $plugin_command help
+    done | sort | column -c2 -t -s';'
+
+    if [[ $JZ_DEBUG ]]; then
+      echo ""
+      echo "Debug Info:"
+      env | grep JZ_
+    fi
+    ;;
+  *)
+    execute_jz_cmd "$@"
+    ;;
+
+esac

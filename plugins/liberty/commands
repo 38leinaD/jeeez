@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -o pipefail
+set -o errexit
+
+case "$1" in
+  help)
+    help_content_func () {
+      cat<<help_content
+    liberty:install; Download and extract Liberty in the current directory
+    liberty:jdbc; Configure JDBC driver in Liberty
+help_content
+    }
+    help_content_func
+    ;;
+  *)
+    exit 1
+    ;;
+
+esac
+
+

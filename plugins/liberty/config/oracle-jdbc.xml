@@ -1,0 +1,9 @@
+<server>
+    <library id="OracleLib">
+        <file name="\${server.config.dir}/lib/${JDBC_DRIVER_FILE}"/>
+    </library>
+    <dataSource jndiName="ORACLE" transactional="true">
+        <jdbcDriver libraryRef="OracleLib"/>
+        <properties.oracle driverType="thin" databaseName="XE" serverName="localhost" portNumber="1521" user="system" password="oracle"/>
+    </dataSource>
+</server>

@@ -1,0 +1,10 @@
+<server>
+    <library id="DerbyLib">
+        <file name="\${server.config.dir}/lib/${JDBC_DRIVER_FILE}"/>
+    </library>
+    <dataSource id="DefaultDataSource" transactional="true">
+    <jdbcDriver libraryRef="DerbyLib"/>
+    <properties.derby.embedded connectionAttributes="upgrade=true" createDatabase="create" databaseName="/var/tmp/sample.embedded.db" shutdownDatabase="false"/>
+    <containerAuthData user="user1"  password="{xor}Oz0vKDtu" />
+    </dataSource>
+</server>

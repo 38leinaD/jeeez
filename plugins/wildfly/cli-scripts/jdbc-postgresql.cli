@@ -1,0 +1,10 @@
+embed-server --std-out=echo --server-config=${SERVER_CONFIG}
+
+if (outcome != success) of /core-service=module-loading/:list-resource-loader-paths(module=org.postgres)
+    echo Installing module org.postgres ...
+    module add --name=org.postgres --resources=${JDBC_DRIVER_PATH} --dependencies=javax.api,javax.transaction.api
+else
+    echo Module org.postgres already installed.
+end-if
+/subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgres",driver-class-name=org.postgresql.Driver)
+data-source add --jndi-name=java:/POSTGRES --name=POSTGRES --connection-url=jdbc:postgresql://${env.DB_HOST:localhost}:${env.DB_PORT:5432}/${env.DB_NAME:postgres} --driver-name=postgres --user-name=${env.DB_USER:postgres} --password=${env.DB_PASS:postgres}

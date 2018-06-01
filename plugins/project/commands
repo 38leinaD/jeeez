@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -o pipefail
+set -o errexit
+
+case "$1" in
+  help)
+    help_content_func () {
+      cat<<help_content
+    project:create; Create a Java EE project from a template
+    project:ls; List project-templates
+help_content
+    }
+    help_content_func
+    ;;
+  *)
+    exit 1
+    ;;
+
+esac
+
+

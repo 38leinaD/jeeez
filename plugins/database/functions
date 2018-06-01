@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $JZ_TRACE ]] && set -x
+source "$PLUGIN_PATH/common/functions"
+
+download_derby_jdbc_driver() {
+    if [ ! -f $JZ_CACHE/db-derby-10.14.2.0-lib.zip ]; then
+        log_info "Downloading db-derby-10.14.2.0-lib.zip to $JZ_CACHE ..."
+        curl  http://apache.mirror.iphh.net//db/derby/db-derby-10.14.2.0/db-derby-10.14.2.0-lib.zip -o $JZ_CACHE/db-derby-10.14.2.0-lib.zip
+        (
+            cd $JZ_CACHE
+            unzip db-derby-10.14.2.0-lib.zip > /dev/null
+        )
+        log_success "Done."
+    fi
+}
+
+download_postgresql_jdbc_driver() {
+    if [ ! -f $JZ_CACHE/postgresql-9.4.1209.jar ]; then
+        log_info "Downloading postgresql-9.4.1209.jar to $JZ_CACHE ..."
+        curl  https://jdbc.postgresql.org/download/postgresql-9.4.1209.jar -o $JZ_CACHE/postgresql-9.4.1209.jar 
+        log_success "Done."
+    fi
+}
+
+download_oracle_jdbc_driver() {
+    if [ ! -f $JZ_CACHE/ojdbc7_g.jar ]; then
+        log_err "It is not possible to automatically download the Oracle JDBC driver. You need an account at oracle.com to download it."
+        log_err "Please manually download the ojdbc7_g.jar from http://www.oracle.com/technetwork/database/features/jdbc/jdbc-drivers-12c-download-1958347.html and copy it to $JZ_CACHE."
+        log_err "After doing so, please rerun this command."
+        exit 1
+    fi
+}
+
+download_jdbc_driver() {
+    if [[ "$1" == "oracle" ]]; then
+        download_oracle_jdbc_driver
+    elif [[ "$1" == "postgresql" ]]; then
+        download_postgresql_jdbc_driver
+    elif [[ "$1" == "derby" ]]; then
+        download_derby_jdbc_driver
+    else
+        log_err "Unsupported database-type '$1'."
+        exit 1
+    fi
+}
+
+get_jdbc_driver_path() {
+    if [[ "$1" == "oracle" ]]; then
+        echo "$JZ_CACHE/ojdbc7_g.jar"
+    elif [[ "$1" == "postgresql" ]]; then
+        echo "$JZ_CACHE/postgresql-9.4.1209.jar"
+    elif [[ "$1" == "derby" ]]; then
+        echo "$JZ_CACHE/db-derby-10.14.2.0-lib/lib/derby.jar"
+    else
+        log_err "Unsupported database-type '$1'."
+        exit 1
+    fi
+}
+

@@ -1,0 +1,6 @@
+version: '3.4'
+services:
+  oracle:
+    image: wnameless/oracle-xe-11g
+    ports:
+     - "1521:1521"

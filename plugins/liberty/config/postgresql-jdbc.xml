@@ -1,0 +1,13 @@
+<server>
+    <!-- PostgreSQL -->
+    <library id="PostgresLib">
+        <file name="\${server.config.dir}/lib/${JDBC_DRIVER_FILE}"/>
+    </library>
+    <jdbcDriver id="PostgresDriver"
+        javax.sql.XADataSource="org.postgresql.xa.PGXADataSource"
+        javax.sql.ConnectionPoolDataSource="org.postgresql.ds.PGConnectionPoolDataSource"
+        libraryRef="PostgresLib"/>
+    <dataSource id="POSTGRES" jndiName="POSTGRES" jdbcDriverRef="PostgresDriver" type="javax.sql.XADataSource" transactional="true">
+        <properties serverName="localhost" portNumber="5432" databaseName="postgres" user="postgres" password="postgres"/>
+    </dataSource>
+</server>

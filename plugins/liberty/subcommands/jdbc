@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $JZ_TRACE ]] && set -x
+source "$PLUGIN_PATH/common/functions"
+source "$PLUGIN_PATH/database/functions"
+
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+usage() {
+    echo "Usage: jz liberty:jdbc postgresql|oracle|derby"
+    echo ""
+    echo "???"
+}
+
+plugin_main_cmd() {
+
+    if [ "$1" == "" ]; then
+        usage
+        exit 1
+    fi
+
+    database_type=$1
+    shift
+
+    download_jdbc_driver $database_type
+
+    jdbc_driver_path=$(get_jdbc_driver_path $database_type)
+    jdbc_driver_file=$(basename $jdbc_driver_path)
+
+    if [ -f bin/server ]; then
+        export WLP_HOME=$(pwd)
+    fi
+
+    if ! [[ -v WLP_HOME ]]; then
+        log_err "Environment variable WLP_HOME is not set."
+        exit 1
+    fi
+
+    JZ_JEE_VERSION=7
+
+    #POSTGRES_JDBC_JAR=${POSTGRES_JDBC_JAR:-postgresql-9.4.1209.jar}
+    WLP_SERVER_NAME=${WLP_SERVER_NAME:-defaultServer}
+
+    if [ ! -d $WLP_HOME/usr/servers/$WLP_SERVER_NAME ]; then
+        log_err "Variable WLP_SERVER_NAME is set to '$WLP_SERVER_NAME'. No server named like this exists."
+        log_info "You may want to run this:"
+        log_info " cd $WLP_HOME/bin; ./server create $WLP_SERVER_NAME --template javaee7"
+        exit 1
+    fi
+
+    if ! grep -q "<feature>javaee-${JZ_JEE_VERSION}.0" $WLP_HOME/usr/servers/$WLP_SERVER_NAME/server.xml; then
+        echo "The configuration under '$WLP_HOME/usr/servers/$WLP_SERVER_NAME/server.xml' does not contain the following expected feature:"
+        echo " <feature>javaee-${JZ_JEE_VERSION}.0"
+        echo "You might want to delete the folder '$WLP_HOME/usr/servers/$WLP_SERVER_NAME' and create a clean server with:"
+        echo " cd $WLP_HOME/bin; ./server create $WLP_SERVER_NAME --template javaee7"
+        exit 1
+    fi
+
+    if [ ! -d $WLP_HOME/usr/servers/defaultServer/lib ]; then
+        mkdir -p $WLP_HOME/usr/servers/defaultServer/lib
+    fi
+
+    if [ ! -f $WLP_HOME/usr/servers/defaultServer/lib/$jdbc_driver_file ]; then
+        cp $jdbc_driver_path $WLP_HOME/usr/servers/defaultServer/lib/
+    fi
+
+    if [ ! -d $WLP_HOME/usr/servers/defaultServer/configDropins/defaults ]; then
+        mkdir -p $WLP_HOME/usr/servers/defaultServer/configDropins/defaults
+    fi
+
+    export JDBC_DRIVER_FILE=$jdbc_driver_file
+    create_file_from_template $WLP_HOME/usr/servers/defaultServer/configDropins/defaults/$database_type-jdbc.xml $PLUGIN_PATH/liberty/config/$database_type-jdbc.xml
+
+    log_success "Succesfully configured $database_type JDBC-Connector in Liberty."
+}
+
+plugin_main_cmd "$@"
