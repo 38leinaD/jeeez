@@ -4,15 +4,6 @@ source $TEST_ROOT/common.sh
 # Creates a Java EE 7 WAR project, installs Wildfly locally and deploys.
 # System-test are then run against local Wildfly.
 
-export DIR=$(pwd)
-function teardown {
-    if [ -f $DIR/process.pid ]; then
-        echo "EXITING; Stopping background-process..."
-        kill -9 $(cat $DIR/process.pid) || true
-    fi
-}
-trap teardown EXIT
-
 # Install Wildfly
 jz wildfly:install
 source .jeeez
@@ -25,13 +16,7 @@ jz project:create myapp
     ./gradlew deployWar
 )
 
-# Start Wildfly
-export LAUNCH_JBOSS_IN_BACKGROUND=1
-export JBOSS_PIDFILE=$DIR/process.pid
-(
-    cd $JBOSS_HOME/bin
-    nohup ./standalone.sh -c standalone-full.xml &
-)
+start_wildfly_in_background
 
 wait_for_endpoint http://localhost:8080/myapp/resources/health
 

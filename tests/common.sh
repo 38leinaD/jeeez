@@ -8,6 +8,15 @@ WHITE='\E[1;37m'
 GREEN='\033[00;92m'
 CYAN='\E[1;36m'
 
+export DIR=$(pwd)
+function teardown {
+    if [ -f $DIR/process.pid ]; then
+        echo "EXITING; Stopping background-process..."
+        kill -9 $(cat $DIR/process.pid) || true
+    fi
+}
+trap teardown EXIT
+
 wait_for_endpoint() {
     local endpoint=$1
     local attempt_counter=0
@@ -17,8 +26,17 @@ wait_for_endpoint() {
             echo "Max attempts reached."
             exit 1
         fi
-        printf '.'
+        echo "wait_for_endpoint $endpoint..."
         attempt_counter=$(($attempt_counter+1))
         sleep 5
     done
+}
+
+start_wildfly_in_background() {
+    export LAUNCH_JBOSS_IN_BACKGROUND=1
+    export JBOSS_PIDFILE=$DIR/process.pid
+    (
+        cd $JBOSS_HOME/bin
+        nohup ./standalone.sh -c standalone-full.xml &
+    )
 }
