@@ -51,5 +51,6 @@ task systemTestInDockerEnv(type: Test) {
 
 dockerCompose {
     useComposeFiles = [project.hasProperty('composeFile') ? project.getProperty('composeFile') : 'docker-compose.yml']
+    captureContainersOutput = true
     isRequiredBy(project.tasks.systemTestInDockerEnv)
 }
