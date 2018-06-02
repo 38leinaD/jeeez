@@ -13,7 +13,7 @@ jz project:create myapp
 (
     cd myapp
     export DEPLOY_TO=$JBOSS_HOME/standalone/deployments
-    ./gradlew deployWar
+    ./gradlew --console=plain deployWar
 )
 
 start_wildfly_in_background
@@ -25,6 +25,6 @@ jz project:create myapp --st
 (
     cd myapp-st
     export APPSVR_HTTP_PORT=8080
-    ./gradlew systemTest
+    ./gradlew --console=plain systemTest
 )
 

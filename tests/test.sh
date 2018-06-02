@@ -60,9 +60,10 @@ if [ "$num_failed_tests" -eq "0" ]; then
     echo -e " ${GREEN}Tests: $num_tests${RESTORE}"
     echo -e " ${GREEN}Passed tests: $num_passed_tests${RESTORE}"
     echo -e " ${GREEN}Failed tests: $num_failed_tests${RESTORE}"
-    exit 1
+    exit 0
 else
     echo -e " ${RED}Tests: $num_tests${RESTORE}"
     echo -e " ${RED}Passed tests: $num_passed_tests${RESTORE}"
     echo -e " ${RED}Failed tests: $num_failed_tests${RESTORE}"
+    exit 1
 fi

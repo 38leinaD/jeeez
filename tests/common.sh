@@ -40,3 +40,10 @@ start_wildfly_in_background() {
         nohup ./standalone.sh -c standalone-full.xml &
     )
 }
+
+# To be able to access the from within a mounted docker-volume, make it accessible for all users.
+# This is required e.g. on travis where the travis-user has uid=2000 but the container-process of wildfly uid=1000.
+# Without this, the the container would not be able to read files within the folder.
+prepare_for_docker_volume_mount() {
+    chmod -R 777 $1
+}

@@ -8,7 +8,7 @@ jz project:create myapp
 (
     cd myapp
     ./gradlew --console=plain build
-    chmod -R 777 build/libs
+    prepare_for_docker_volume_mount build/libs
 )
 jz project:create myapp --st
 (
