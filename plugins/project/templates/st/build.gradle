@@ -52,5 +52,6 @@ task systemTestInDockerEnv(type: Test) {
 dockerCompose {
     useComposeFiles = [project.hasProperty('composeFile') ? project.getProperty('composeFile') : 'docker-compose.yml']
     captureContainersOutput = true
+    waitForHealthyStateTimeout = java.time.Duration.ofSeconds(60)
     isRequiredBy(project.tasks.systemTestInDockerEnv)
 }
