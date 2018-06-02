@@ -12,9 +12,17 @@ It was mainly created due to the non-existing scaffolding/archetype-mechanism in
 
 == Installation
 
+=== Automatic
+
+----
+curl https://raw.githubusercontent.com/38leinaD/jeeez/master/installer -sSf | sh
+----
+
+=== Manually from Git
+
 ----
 $ git clone https://github.com/38leinaD/jeeez.git
-$ echo "alias jz='$(pwd)/jeeez/jz'" >> .bashrc
+$ echo "alias jz='$(pwd)/jeeez/jz'" >> ~/.bashrc
 ----
 
 == Usage

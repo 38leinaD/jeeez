@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+set -o pipefail # pipe fails with first failing command
+set -o errexit # exit script on failed command
+
+** Installing JEEEZ...
+
+curl -LOk https://github.com/38leinaD/jeeez/archive/master.zip
+unzip master.zip
+rm -f master.zip
+mv jeeez-master jeeez
+
+echo "** Adding alias 'jz' to ~/.bashrc"
+echo "alias jz='$(pwd)/jeeez/jz'" >> ~/.bashrc
+
+if [ -f ~/.zshrc ]; then
+  echo "** Adding alias 'jz' to ~/.zshrc"
+  echo "alias jz='$(pwd)/jeeez/jz'" >> ~/.zshrc
+fi
+
+alias jz='$(pwd)/jeeez/jz'
