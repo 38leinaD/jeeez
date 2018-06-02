@@ -89,8 +89,8 @@ scaffold() {
 
         log_success "Created system-test project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
         log_success "Run them with 'cd $artifactid; ./gradlew systemTestInDockerEnv'."
-        log_warn "This project only works in conjunction with the project named '$parentid'."
-        log_warn "Make sure to run './gradlew build' on it at least once to generate the artifact to deploy."
+        log_success "This project only works in conjunction with the project named '$parentid'."
+        log_success "Make sure to run './gradlew build' on it at least once to generate the artifact to deploy."
     else
         log_success "Created a project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
         log_success "Build & run it with 'cd $artifactid; ./run_docker.sh'."
