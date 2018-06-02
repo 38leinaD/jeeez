@@ -3,10 +3,10 @@
 jz project:create myapp
 (
     cd myapp
-    ./gradlew build
+    ./gradlew --console=plain build
 )
 jz project:create myapp --st
 (
     cd myapp-st
-    ./gradlew systemTestInDockerEnv
+    ./gradlew --console=plain systemTestInDockerEnv
 )
