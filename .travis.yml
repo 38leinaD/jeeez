@@ -1,5 +1,7 @@
 sudo: required
 
+language: java
+
 services:
   - docker
 
@@ -9,3 +11,12 @@ before_install:
 script:
   - cd tests
   - ./test.sh
+
+after_error:
+  - false
+
+after_failure:
+  - false
+
+after_success:
+  - true

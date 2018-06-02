@@ -5,12 +5,12 @@ set -o errexit # exit script on failed command
 source common.sh
 
 export TEST_ROOT=${JZ_ROOT:-"$(dirname "$(readlink -f "$0")")"}
-export PATH=$PATH:$(realpath $(pwd)/..)
+export PATH=$PATH:$(pwd)/..
 
 run_testcase() {
     local testcase=$1
     export TEST_WORKSPACE=$(mktemp -d)
-    export TEST_SCRIPT=$(realpath $testcase)
+    export TEST_SCRIPT=$(pwd)/$testcase
     echo "=========================================================================================="
     echo "Running test-case $testcase (TEST_WORKSPACE=$TEST_WORKSPACE)..."
 
