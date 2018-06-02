@@ -8,6 +8,7 @@ jz project:create myapp
 (
     cd myapp
     ./gradlew --console=plain build
+    chmod -R 777 build/libs
 )
 jz project:create myapp --st
 (
