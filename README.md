@@ -16,9 +16,9 @@ $ echo "alias jz='$(pwd)/jeeez/jz'" >> .bashrc
 
 ## Usage
 
-Run the tool without any argument to get some help about the usage.
+Run the tool without any argument to get some help on the usage.
 
-The main feature/command `project:create`
+The main feature/command is `project:create`
 
 ~~~
 $ jz project:create
@@ -44,8 +44,36 @@ Now, lets scaffold, build and deploy a Java EE app:
 
 ~~~
 $ jz project:create de.dplatz.myapp
- | Created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
- | Build & run it with 'cd myapp; ./run_docker.sh'.
- | Open http://localhost/myapp/resources/health after the sever is started.
+| Created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
+| Build & run it with 'cd myapp; ./run_docker.sh'.
+| Open http://localhost/myapp/resources/health after the sever is started.
 $ cd myapp; ./run_docker.sh
 ~~~
+
+### Supported Project Templates
+
+The following combinations of project-templates and built-tool are currently supported:
+
+|               | war           | ear   | system-test (st) |
+| ------------- |:------------- | ----- | ---------------- |
+| Gradle        | x             | x     | x                |
+| Maven         | x             | x     |                  |
+
+
+The following combinations of project-templates are currently supported:
+
+| Spec        | WAR          | EAR  |
+| ------------- |:------------- | ----- |
+| Java EE 7      | x | x |
+| Java EE 8     | x      |   x |
+| Microprofile 1.3 |      |    |
+
+
+
+### Supported Application Servers
+
+| Spec             | Wildfly       | Liberty     | TomEE |
+| -------------    |:------------- | ----------- | ----- |
+| Java EE 7        | x             | x           | x     |
+| Java EE 8        | x             |             |       |
+| Microprofile 1.3 |               |             |       |
