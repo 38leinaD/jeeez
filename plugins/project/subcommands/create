@@ -78,6 +78,7 @@ scaffold() {
             parentpath=$(realpath $parentid)
             log_info "Found parent-project @ $parentpath"
             echo "PROJECT=$parentpath" >> $artifactid/.env
+            echo "APPNAME=$parentid" >> $artifactid/.env
             echo "COMPOSE_PROJECT_NAME=$parentid" >> $artifactid/.env
             find $parentpath -type f -exec sed -i "s/appname/${parentid}/g" {} \;
             find $artifactid -type f -exec sed -i "s/appname/${parentid}/g" {} \;

@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $JZ_TRACE ]] && set -x
+source "$PLUGIN_PATH/common/functions"
+
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+plugin_main_cmd() {
+
+    if [ ! -f $JZ_CACHE/apache-tomee-7.0.4-plume.zip ]; then
+        log_info "Downloading apache-tomee-7.0.4-plume.zip to $JZ_CACHE ..."
+        curl http://repo.maven.apache.org/maven2/org/apache/tomee/apache-tomee/7.0.4/apache-tomee-7.0.4-plume.zip -o $JZ_CACHE/apache-tomee-7.0.4-plume.zip
+    fi
+
+    if [ -d apache-tomee-7.0.4-plume ]; then
+        log_err "A folder apache-tomee-7.0.4-plume already exists. Maybe delete it and try again."
+        exit 1
+    fi
+    log_info "Extracting apache-tomee-7.0.4-plume.zip to this directory ..."
+    unzip $JZ_CACHE/apache-tomee-7.0.4-plume.zip > /dev/null
+
+    if [[ "${JZ_CUSTOM_RC}" == "" ]]; then
+        export JZ_CUSTOM_RC=$(pwd)/.jeeez
+    fi
+
+    echo "export CATALINA_HOME=$(pwd)/apache-tomee-plume-7.0.4" >> $JZ_CUSTOM_RC
+    log_success "Done."
+    log_success "You can start TomEE with full Java EE 7 profile by running 'cd apache-tomee-plume-7.0.4/bin; ./catalina.sh run'."
+    # TODO: Support for Development Builds/Java EE 8
+}
+
+plugin_main_cmd "$@"
