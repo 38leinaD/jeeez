@@ -2,7 +2,7 @@
 set -o pipefail # pipe fails with first failing command
 set -o errexit # exit script on failed command
 
-** Installing JEEEZ...
+echo "** Installing JEEEZ..."
 
 curl -LOk https://github.com/38leinaD/jeeez/archive/master.zip
 unzip master.zip
@@ -18,3 +18,5 @@ if [ -f ~/.zshrc ]; then
 fi
 
 alias jz='$(pwd)/jeeez/jz'
+
+echo "** Done."
