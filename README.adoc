@@ -1,4 +1,7 @@
-# JEEEZ
+= JEEEZ
+
+image::https://api.travis-ci.org/38leinaD/jeeez.svg[]
+
 
 JEEEZ (short: jz) is an simple but opinionated command-line scaffolding tool that gets you started on developing a Java EE application in seconds.
 It's just a set of Bash-scripts; so it should be running on most flavors of Linux, Unix, MacOSX and for Windows under Cygwin or MSYS.
@@ -7,20 +10,20 @@ Assuming you have Docker installed, you will even get your application deployed 
 The tool is very very simple and optionated to serve my needs in demos and trainings.
 It was mainly created due to the non-existing scaffolding/archetype-mechanism in Gradle.
 
-## Installation
+== Installation
 
-~~~
+----
 $ git clone https://github.com/38leinaD/jeeez.git
 $ echo "alias jz='$(pwd)/jeeez/jz'" >> .bashrc
-~~~
+----
 
-## Usage
+== Usage
 
 Run the tool without any argument to get some help on the usage.
 
 The main feature/command is `project:create`
 
-~~~
+----
 $ jz project:create
 Usage: jz project:create [groupid.]artifactid [OPTIONS]
 
@@ -38,42 +41,43 @@ $ jz project:create jz.myapp
     - has artifact-id "myapp",
     - and builds with Gradle and Maven. (*)
 
-~~~
+----
 
 Now, lets scaffold, build and deploy a Java EE app:
 
-~~~
+----
 $ jz project:create de.dplatz.myapp
 | Created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
 | Build & run it with 'cd myapp; ./run_docker.sh'.
 | Open http://localhost/myapp/resources/health after the sever is started.
 $ cd myapp; ./run_docker.sh
-~~~
+----
 
-### Supported Project Templates
+=== Supported Project Templates
 
 The following combinations of project-templates and built-tool are currently supported:
 
+|===
 |               | war           | ear   | system-test (st) |
-| ------------- |:------------- | ----- | ---------------- |
 | Gradle        | x             | x     | x                |
 | Maven         | x             | x     |                  |
-
+|===
 
 The following combinations of project-templates are currently supported:
 
+|===
 | Spec        | WAR          | EAR  |
-| ------------- |:------------- | ----- |
 | Java EE 7      | x | x |
 | Java EE 8     | x      |   x |
 | Microprofile 1.3 |      |    |
+|===
+=== Supported Application Servers
 
+TODO
 
-
-### Supported Application Servers
-
+|===
 | Spec             | Wildfly       | Liberty     | TomEE |
-| -------------    |:------------- | ----------- | ----- |
 | Java EE 7        | x             | x           | x     |
 | Java EE 8        | x             |             |       |
 | Microprofile 1.3 |               |             |       |
+|===
