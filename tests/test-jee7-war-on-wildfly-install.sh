@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 source $TEST_ROOT/common.sh
 
+# Creates a Java EE 7 WAR project, installs Wildfly locally and deploys.
+# System-test are then run against local Wildfly.
+
 export DIR=$(pwd)
 function teardown {
     if [ -f $DIR/process.pid ]; then
