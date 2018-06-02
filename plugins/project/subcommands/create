@@ -75,7 +75,7 @@ scaffold() {
         # Fint the main project this belongs to
         parentid=${artifactid%-st}
         if [ -d "$parentid" ]; then
-            parentpath=$(realpath $parentid)
+            parentpath=$(pwd)/../$parentid
             log_info "Found parent-project @ $parentpath"
             echo "PROJECT=$parentpath" >> $artifactid/.env
             echo "APPNAME=$parentid" >> $artifactid/.env
