@@ -19,7 +19,8 @@ public class HealthCheckST {
 
     @Before
     public void init() {
-        tut = ClientBuilder.newClient().target("http://localhost/appname");
+        String httpPort = System.getenv("APPSVR_HTTP_PORT") != null ? System.getenv("APPSVR_HTTP_PORT") : "80";
+        tut = ClientBuilder.newClient().target("http://localhost:" + httpPort + "/appname");
     }
 
     @Test
