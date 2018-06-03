@@ -13,5 +13,5 @@ jz project:create myapp --build=maven
 jz project:create myapp --build=maven --st
 (
     cd myapp-st
-    ./mvnw verify
+    ./mvnw verify -DcomposeFile=docker-compose.tomee.yml
 )

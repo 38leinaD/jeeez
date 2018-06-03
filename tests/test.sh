@@ -39,7 +39,7 @@ run_testcase() {
 
     pushd $TEST_WORKSPACE
     bash $TEST_SCRIPT && test_passed || test_failed
-    rm -rf $TEST_WORKSPACE
+    [[ -v keep_failed ]] || rm -rf $TEST_WORKSPACE
     popd
     echo "*******************************************************************************************"
 }
@@ -49,6 +49,21 @@ run_all_testcases() {
         run_testcase $testcase
     done
 }
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --keep-failed)
+        keep_failed=1
+        ;;
+        --*)
+        echo "Invalid argument"
+        exit 1
+        ;;
+        *)
+        break
+    esac
+    shift
+done
 
 if [ "$1" == "" ]; then
     run_all_testcases
