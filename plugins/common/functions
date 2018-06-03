@@ -5,7 +5,9 @@ RESTORE='\033[0m'
 RED='\033[00;91m'
 WHITE='\E[1;37m'
 GREEN='\033[00;92m'
+BLUE='\e[94m'
 CYAN='\E[1;36m'
+HR='------------------------------------------------------------------------'
 
 has_tty() {
   if [[ "$(/usr/bin/tty || true)" == "not a tty" ]]; then
@@ -50,19 +52,19 @@ parse_args() {
 }
 
 log_info() {
-    echo -en "\E[1;36m|\E[0;0m $*\n" >&2
+    echo -en "[${BLUE}INFO${RESTORE}] $*\n" >&2
 }
 
 log_success() {
-    echo -en "\E[1;32m|\E[0;0m $*\n" >&2
+    log_info "${GREEN}$*${RESTORE}"
 }
 
 log_warn() {
-    echo -en "\E[33m|\E[0m $*\n" >&2
+    echo -en "[${YELLOW}WARN${RESTORE}]$*\n" >&2
 }
 
 log_err() {
-    echo -en "\E[31m|\E[0m $*\n" >&2
+    echo -en "[${RED}ERROR${RESTORE}] $*\n" >&2
     #if [ -x "$(command -v notify-send)" ]; then
     #    notify-send -u critical "$*"
     #fi

@@ -113,18 +113,22 @@ scaffold() {
             exit 1
         fi
 
-        log_success "Created system-test project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
+        log_success "Succesfully created system-test project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
+        log_info $HR
         if [[ "$build" == "maven" ]]; then
-            log_success "Run them with 'cd $artifactid; ./mvnw verify'."
+            log_info "Run them with 'cd $artifactid; ./mvnw verify'."
         else
-            log_success "Run them with 'cd $artifactid; ./gradlew systemTestInDockerEnv'."
+            log_info "Run them with 'cd $artifactid; ./gradlew systemTestInDockerEnv'."
         fi
-        log_success "This project only works in conjunction with the project named '$parentid' located parallel to this project."
-        log_success "Make sure to run  the build on it at least once to generate the artifact to deploy."
+        log_info "This project only works in conjunction with the project named '$parentid' located parallel to this project."
+        log_info "Make sure to run  the build on it at least once to generate the artifact to deploy."
+        log_info $HR
     else
-        log_success "Created a project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
-        log_success "Build & run it with 'cd $artifactid; ./run_docker.sh'."
-        log_success "Open http://localhost/$artifactid/resources/health after the sever is started."
+        log_success "Succesfully created a project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
+        log_info $HR
+        log_info "Build & run it with 'cd $artifactid; ./run_docker.sh'."
+        log_info "Open http://localhost/$artifactid/resources/health when the sever is started."
+        log_info $HR
     fi
     #tree -C $artifactid/
 }
