@@ -92,7 +92,7 @@ $ jz project:create de.dplatz.myapp --st
 | Created system-test project with artifact-id 'myapp-st' and group-id 'de.dplatz' from template 'st'.
 | Run them with 'cd myapp-st; ./gradlew systemTestInDockerEnv'.
 | This project only works in conjunction with the project named 'myapp' located parallel to this project.
-| Make sure to run './gradlew build' on it at least once to generate the artifact to deploy.
+| Make sure to run the build on it at least once to generate the artifact to deploy.
 ----
 
 === EARs
