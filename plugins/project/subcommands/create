@@ -9,6 +9,8 @@ list_templates() {
     find $PLUGIN_PATH/project/templates -maxdepth 1 -type d -print | tail -n +2 | rev | cut -d'/' -f 1 | rev
 }
 
+build="gradle"
+
 usage() {
     templates=$(list_templates | paste -sd "|" -)
     echo "Usage: jz project:create [groupid.]artifactid [OPTIONS]"
@@ -19,6 +21,7 @@ usage() {
     echo "    --jee-version=7|8 (default: 7)"
     echo "    --template=$templates (default: war)"
     echo "    --st (creates a system-test project; same as --template=st)"
+    echo "    --build=gradle|maven (default: gradle)"
     echo ""
     echo "Example:"
     echo "$ jz project:create jz.myapp"
@@ -70,6 +73,18 @@ scaffold() {
         touch .jeeez
     fi
 
+    if [[ "$build" == "maven" ]]; then
+        rm -rf $artifactid/gradle
+        rm -f $artifactid/gradlew*
+        rm -f $artifactid/settings.gradle
+        find $artifactid -type f -exec sed -i "s/template-artifactid/${artifactid}/g" {} \;
+        find $artifactid -type f -name "build.gradle" -exec rm -f {} \;
+    elif [[ "$build" == "gradle" ]]; then
+        rm -rf $artifactid/.mvn
+        rm -f $artifactid/mvnw*
+        find $artifactid -type f -name "pom.xml" -exec rm -f {} \;
+    fi
+
     if [[ "$artifactid" == *-st ]]; then
         # This is a system-test project
         # Fint the main project this belongs to
@@ -77,11 +92,22 @@ scaffold() {
         if [ -d "$parentid" ]; then
             parentpath=$(pwd)/$parentid
             log_info "Found parent-project @ $parentpath"
-            echo "PROJECT=$parentpath" >> $artifactid/.env
-            echo "APPNAME=$parentid" >> $artifactid/.env
+            #echo "PROJECT=$parentpath" >> $artifactid/.env
+            #echo "APPNAME=$parentid" >> $artifactid/.env
             echo "COMPOSE_PROJECT_NAME=$parentid" >> $artifactid/.env
-            find $parentpath -type f -exec sed -i "s/appname/${parentid}/g" {} \;
-            find $artifactid -type f -exec sed -i "s/appname/${parentid}/g" {} \;
+            find $parentpath -type f -exec sed -i "s/@APPNAME@/${parentid}/g" {} \;
+            find $artifactid -type f -exec sed -i "s/@APPNAME@/${parentid}/g" {} \;
+            #find $artifactid -type f -name "docker-compose*.yml" -exec sed -i "s/@APPNAME@/${parentid}/g" {} \;
+            
+            if [[ "$build" == "maven" ]]; then
+                find $artifactid -type f -exec sed -i "s/build\/libs/target/g" {} \;
+            fi
+            (
+                APPNAME=$parentid
+                for composeFile in $artifactid/docker-compose*.yml; do
+                    create_file_from_template $composeFile $composeFile
+                done
+            )
         else
             log_err "Expected a main-project named '$parentid' but unable to find."
             exit 1
@@ -89,7 +115,7 @@ scaffold() {
 
         log_success "Created system-test project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
         log_success "Run them with 'cd $artifactid; ./gradlew systemTestInDockerEnv'."
-        log_success "This project only works in conjunction with the project named '$parentid'."
+        log_success "This project only works in conjunction with the project named '$parentid' located parallel to this project."
         log_success "Make sure to run './gradlew build' on it at least once to generate the artifact to deploy."
     else
         log_success "Created a project with artifact-id '$artifactid' and group-id '$groupid' from template '$template'."
@@ -129,6 +155,9 @@ plugin_main_cmd() {
         project_name="${project_name}-st"
         template="st"
         ;;
+        --build=*)
+        build="${1#*=}"
+        ;;
         *)
         log_err "Invalid argument"
         exit 1
@@ -147,6 +176,7 @@ plugin_main_cmd() {
     if [ -z "$jee_version" ]; then
         jee_version="7"
     fi
+
 
     if [[ $(expr index "$project_name" .) != "0" ]] ; then
         # project-name contains dot and thus a group-id

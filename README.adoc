@@ -3,12 +3,14 @@
 image::https://api.travis-ci.org/38leinaD/jeeez.svg[]
 
 
-JEEEZ (short: jz) is an simple but opinionated command-line scaffolding tool that gets you started on developing a Java EE application in seconds.
+JEEEZ (short: jz) is a command-line scaffolding tool that gets you started on developing a Java EE application in seconds.
 It's just a set of Bash-scripts; so it should be running on most flavors of Linux, Unix, MacOSX and for Windows under Cygwin or MSYS.
 Assuming you have Docker installed, you will even get your application deployed in seconds.
 
-The tool is very very simple and optionated to serve my needs in demos and trainings.
-It was mainly created due to the non-existing scaffolding/archetype-mechanism in Gradle.
+The tool is simple and optionated to serve my needs in demos and trainings.
+It was originally created due to the non-existing scaffolding/archetype-mechanism in Gradle.
+
+As I am using Gradle mainly, the tools is tested more thoroghly with Gradle. But Maven templates and support should still work fairly good.
 
 == Installation
 
@@ -51,7 +53,9 @@ $ jz project:create jz.myapp
 
 ----
 
-Now, lets scaffold, build and deploy a Java EE app:
+Now, lets scaffold, build and deploy a Java EE app.
+
+=== Gradle
 
 ----
 $ jz project:create de.dplatz.myapp
@@ -61,33 +65,49 @@ $ jz project:create de.dplatz.myapp
 $ cd myapp; ./run_docker.sh
 ----
 
-=== Examples/test
+=== Maven
 
-Have a check in the folder `test` for the files `test-*.sh`.
+----
+$ jz project:create de.dplatz.myapp --build=maven
+| Created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
+| Build & run it with 'cd myapp; ./run_docker.sh'.
+| Open http://localhost/myapp/resources/health after the sever is started.
+$ cd myapp; ./run_docker.sh
+----
+
+=== System Tests
+
+Have a check in the folder `test` for the test-scripts of this tool.
 They provide good examples of what you can achive with just a few keystrokes.
 
-[source,bash]
+E.g. you can also generate a system-tests project in addition to the main project.
+System-tests are run against a docker-compose-based environment.
+
 ----
-include::tests/test-jee7-war-on-wildfly-docker.sh[]
+$ jz project:create de.dplatz.myapp
+| Created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
+| Build & run it with 'cd myapp; ./run_docker.sh'.
+| Open http://localhost/myapp/resources/health after the sever is started.
+$ jz project:create de.dplatz.myapp --st
+| Created system-test project with artifact-id 'myapp-st' and group-id 'de.dplatz' from template 'st'.
+| Run them with 'cd myapp-st; ./gradlew systemTestInDockerEnv'.
+| This project only works in conjunction with the project named 'myapp' located parallel to this project.
+| Make sure to run './gradlew build' on it at least once to generate the artifact to deploy.
 ----
 
-=== Supported Project Templates
+=== EARs
 
-The following combinations of project-templates and built-tool are currently supported:
+TODO
 
-|===
-|               | war           | ear   | system-test (st)
-| Gradle        | x             | x     | x               
-| Maven         | x             | x     |                 
-|===
+== Supported Project Templates
 
 The following combinations of project-templates are currently supported:
 
 |===
-| Spec        | WAR          | EAR 
-| Java EE 7      | x | x
-| Java EE 8     | x      |   x 
-| Microprofile 1.3 |      |    
+| Spec              | WAR  | EAR 
+| Java EE 7         | x    | x
+| Java EE 8         | x    | x 
+| Microprofile 1.3  |      |    
 |===
 === Supported Application Servers
 
@@ -99,3 +119,7 @@ TODO
 | Java EE 8        | x             |             |       
 | Microprofile 1.3 |               |             |       
 |===
+
+== Todos
+
+TODO

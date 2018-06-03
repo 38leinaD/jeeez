@@ -7,12 +7,7 @@ Systems-tests are run in a docker-environment, defined via docker-compose.
 
 This project needs to know the path of the main project that is to be tested.
 This is to allow mounting the Gradle build-folder containing the WAR/EAR directly to the autodeploy folder of the application-server running inside Docker.
-
-For this, create a file `.env` containing the path of the tested project in a variable named `PROJECT`:
-
-```
-PROJECT=/home/daniel/junk/appname
-```
+For this, both projects should be located next to each other.
 
 ## Usage
 
@@ -39,7 +34,7 @@ Now you can execute the system-tests via
 ### Apache Bench
 
 ```
-ab -n 1000 -c 5 http://localhost/myapp/resources/appname
+ab -n 1000 -c 5 http://localhost/myapp/resources/APPNAME
 ```
 
 ### JMeter

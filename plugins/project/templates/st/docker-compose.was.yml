@@ -1,4 +1,4 @@
-version: '3.4'
+version: '2.1'
 services:
   appsvr:
     image: 38leinad/was-9
@@ -7,10 +7,9 @@ services:
      - "9060:9060"
     volumes:
      - /etc/localtime:/etc/localtime:ro
-     - "${PROJECT}/build/libs/:/opt/IBM/WebSphere/AppServer/profiles/AppSrv01/monitoredDeployableApps/servers/server1/"
+     - "../${APPNAME}/build/libs/${APPNAME}.war:/opt/IBM/WebSphere/AppServer/profiles/AppSrv01/monitoredDeployableApps/servers/server1/${APPNAME}.war"
     healthcheck:
-      test: wget --quiet --tries=1 --spider http://localhost:9080/appname/resources/health || exit 1
+      test: wget --quiet --tries=1 --spider http://localhost:9080/@APPNAME@/resources/health || exit 1
       interval: 5s
       timeout: 10s
-      retries: 3
-      start_period: 20s
+      retries: 10

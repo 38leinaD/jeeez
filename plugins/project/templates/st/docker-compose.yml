@@ -1,4 +1,4 @@
-version: '3.4'
+version: '2.1'
 services:
   # postgres:
   #   image: postgres:9.5
@@ -12,14 +12,13 @@ services:
     # image: 38leinad/wildfly-10-jdbc
     image: jboss/wildfly:10.1.0.Final
     # Add "wait-for db:1521 -- <command>" to command to wait on another service.
-    command: /opt/jboss/wildfly/bin/standalone.sh --server-config=standalone-full.xml -b "0.0.0.0"
+    command: ["/opt/jboss/wildfly/bin/standalone.sh", "--server-config=standalone-full.xml", "-b", "0.0.0.0"]
     ports:
      - "80:8080"
     volumes:
-     - "${PROJECT}/build/libs/:/opt/jboss/wildfly/standalone/deployments/"
+     - "../${APPNAME}/build/libs/${APPNAME}.war:/opt/jboss/wildfly/standalone/deployments/${APPNAME}.war"
     healthcheck:
-      test: curl --fail http://127.0.0.1:8080/appname/resources/health || exit 1
+      test: curl --fail http://127.0.0.1:8080/@APPNAME@/resources/health || exit 1
       interval: 5s
       timeout: 10s
       retries: 3
-      start_period: 5s
