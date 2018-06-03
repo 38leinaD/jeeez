@@ -1,21 +1,7 @@
 #!/usr/bin/env bash
-set -o pipefail # pipe fails with first failing command
-set -o errexit # exit script on failed command
 
-RESTORE='\033[0m'
-RED='\033[00;91m'
-WHITE='\E[1;37m'
-GREEN='\033[00;92m'
-CYAN='\E[1;36m'
-
-export DIR=$(pwd)
-function teardown {
-    if [ -f $DIR/process.pid ]; then
-        echo "EXITING; Stopping background-process..."
-        kill -9 $(cat $DIR/process.pid) || true
-    fi
-}
-trap teardown EXIT
+export PATH=$PATH:$(pwd)/..
+export TEST_WORKSPACE=$(mktemp -d)
 
 wait_for_endpoint() {
     local endpoint=$1
@@ -34,12 +20,13 @@ wait_for_endpoint() {
 
 start_wildfly_in_background() {
     export LAUNCH_JBOSS_IN_BACKGROUND=1
-    export JBOSS_PIDFILE=$DIR/process.pid
+    export JBOSS_PIDFILE=$TEST_WORKSPACE/process.pid
     (
         cd $JBOSS_HOME/bin
         nohup ./standalone.sh -c standalone-full.xml &
     )
 }
+
 
 # To be able to access the from within a mounted docker-volume, make it accessible for all users.
 # This is required e.g. on travis where the travis-user has uid=2000 but the container-process of wildfly uid=1000.

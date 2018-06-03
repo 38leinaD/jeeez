@@ -9,7 +9,7 @@ before_install:
   - true
 
 script:
-  - cd tests;./test.sh
+  - cd tests; ./test_runner -s /bin/bash
 
 after_error:
   - false
