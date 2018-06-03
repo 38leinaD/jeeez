@@ -51,6 +51,10 @@ parse_args() {
   return 0
 }
 
+log_hr() {
+    log_info $HR
+}
+
 log_info() {
     echo -en "[${BLUE}INFO${RESTORE}] $*\n" >&2
 }

@@ -25,8 +25,9 @@ plugin_main_cmd() {
 
     echo "export WLP_HOME=$(pwd)/openliberty-18.0.0.1" >> $JZ_CUSTOM_RC
     log_success "Done."
-    log_success "You can start Liberty with full Java EE 7 profile by running 'cd openliberty-18.0.0.1/bin; ./server create --template=javaee7; ./server run'."
-    log_success "For Java EE 8, get the latest 'Development build' from https://openliberty.io/downloads/. Extract it and run './server create --template=javaee8'; ./server run'."
+    log_hr
+    log_info "You can start Liberty with full Java EE 7 profile by running 'cd openliberty-18.0.0.1/bin; ./server create --template=javaee7; ./server run'."
+    log_info "For Java EE 8, get the latest 'Development build' from https://openliberty.io/downloads/. Extract it and run './server create --template=javaee8'; ./server run'."
     # TODO: Support for Development Builds/Java EE 8
 }
 
