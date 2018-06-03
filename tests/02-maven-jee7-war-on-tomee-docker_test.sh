@@ -6,7 +6,7 @@
 
 test_maven_jee7_war_on_tomee_docker() {
     cd $TEST_WORKSPACE
-    
+
     jz project:create myapp --build=maven
     (
         cd myapp
@@ -17,6 +17,7 @@ test_maven_jee7_war_on_tomee_docker() {
     (
         cd myapp-st
         ./mvnw verify -DcomposeFile=docker-compose.tomee.yml
+        assertEquals 0 $?
     )
 }
 
