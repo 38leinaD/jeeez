@@ -20,14 +20,12 @@ public class HealthCheckST {
     @Before
     public void init() {
         String httpPort = System.getenv("APPSVR_HTTP_PORT") != null ? System.getenv("APPSVR_HTTP_PORT") : "80";
-        tut = ClientBuilder.newClient().target("http://localhost:" + httpPort + "/@APPNAME@");
+        tut = ClientBuilder.newClient().target("http://localhost:" + httpPort + "/template-parent-artifactid");
     }
 
     @Test
     public void testMe() {
-        Response response = tut.path("resources/health")
-            .request()
-            .get();
+        Response response = tut.path("resources/health").request().get();
 
         assertThat(response.getStatus(), CoreMatchers.is(200));
         assertThat(response.readEntity(String.class), CoreMatchers.startsWith("UP"));

@@ -9,7 +9,7 @@ services:
      - /etc/localtime:/etc/localtime:ro
      - "../${APPNAME}/build/libs/${APPNAME}.war:/opt/IBM/WebSphere/AppServer/profiles/AppSrv01/monitoredDeployableApps/servers/server1/${APPNAME}.war"
     healthcheck:
-      test: wget --quiet --tries=1 --spider http://localhost:9080/@APPNAME@/resources/health || exit 1
+      test: wget --quiet --tries=1 --spider http://localhost:9080/template-parent-artifactid/resources/health || exit 1
       interval: 5s
       timeout: 10s
       retries: 10
