@@ -40,7 +40,10 @@ Usage: jz project:create [groupid.]artifactid [OPTIONS]
 Create a Java EE project from a template
 
 Options:
-    --jee-version: default: 7
+    --jee-version=7|8 (default: 7)
+    --template=ear|st|war (default: war)
+    --st (creates a system-test project; same as --template=st)
+    --build=gradle|maven (default: gradle)
 
 Example:
 $ jz project:create jz.myapp
@@ -49,8 +52,7 @@ $ jz project:create jz.myapp
     - packages as a WAR archive (*),
     - has group-id "jz",
     - has artifact-id "myapp",
-    - and builds with Gradle and Maven. (*)
-
+    - and builds with Gradle (*)
 ----
 
 Now, lets scaffold, build and deploy a Java EE app.
@@ -59,20 +61,17 @@ Now, lets scaffold, build and deploy a Java EE app.
 
 ----
 $ jz project:create de.dplatz.myapp
-| Created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
-| Build & run it with 'cd myapp; ./run_docker.sh'.
-| Open http://localhost/myapp/resources/health after the sever is started.
-$ cd myapp; ./run_docker.sh
+[INFO] Succesfully created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
+[INFO] ------------------------------------------------------------------------
+[INFO] Build & run it with 'cd myapp; ./run_docker.sh'.
+[INFO] Open http://localhost/myapp/resources/health when the sever is started.
+[INFO] ------------------------------------------------------------------------
 ----
 
 === Maven
 
 ----
 $ jz project:create de.dplatz.myapp --build=maven
-| Created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
-| Build & run it with 'cd myapp; ./run_docker.sh'.
-| Open http://localhost/myapp/resources/health after the sever is started.
-$ cd myapp; ./run_docker.sh
 ----
 
 === System Tests
@@ -81,45 +80,55 @@ Have a check in the folder `test` for the test-scripts of this tool.
 They provide good examples of what you can achive with just a few keystrokes.
 
 E.g. you can also generate a system-tests project in addition to the main project.
-System-tests are run against a docker-compose-based environment.
 
 ----
-$ jz project:create de.dplatz.myapp
-| Created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
-| Build & run it with 'cd myapp; ./run_docker.sh'.
-| Open http://localhost/myapp/resources/health after the sever is started.
-$ jz project:create de.dplatz.myapp --st
-| Created system-test project with artifact-id 'myapp-st' and group-id 'de.dplatz' from template 'st'.
-| Run them with 'cd myapp-st; ./gradlew systemTestInDockerEnv'.
-| This project only works in conjunction with the project named 'myapp' located parallel to this project.
-| Make sure to run the build on it at least once to generate the artifact to deploy.
+$ jz project:create de.dplatz.myapp --st         
+[INFO] Found parent-project @ myapp
+[INFO] Succesfully created system-test project with artifact-id 'myapp-st' and group-id 'de.dplatz' from template 'st'.
+[INFO] ------------------------------------------------------------------------
+[INFO] Run them with 'cd myapp-st; ./gradlew systemTestInDockerEnv'.
+[INFO] This project only works in conjunction with the project named 'myapp' located parallel to this project.
+[INFO] Make sure to run  the build on it at least once to generate the artifact to deploy.
+[INFO] ------------------------------------------------------------------------
+$ cd myapp-st; ./gradlew systemTestInDockerEnv
 ----
+
+System-tests are run against a docker-compose-based environment. See the myapp-st project for docker-compose.yml files for various application-servers.
+The default being used in the docker-compose.yml is Wildfly. But to e.g. test against Websphere Liberty, just run:
+
+----
+$ cd myapp-st; ./gradlew systemTestInDockerEnv -PcomposeFile=docker-compose.wlp.yml
+----
+
+Docker compose files are provided for the following application-servers:
+
+* Wildfly 13
+* TomEE 7
+* Websphere Liberty 18
+* Websphere Traditional 9
 
 === EARs
 
 TODO
 
-== Supported Project Templates
-
-The following combinations of project-templates are currently supported:
-
-|===
-| Spec              | WAR  | EAR 
-| Java EE 7         | x    | x
-| Java EE 8         | x    | x 
-| Microprofile 1.3  |      |    
-|===
 === Supported Application Servers
 
-TODO
+The following combinations of application-server and specifications are supported/tested.
 
 |===
-| Spec             | Wildfly       | Liberty     | TomEE 
-| Java EE 7        | x             | x           | x     
-| Java EE 8        | x             |             |       
-| Microprofile 1.3 |               |             |       
+|                           | Java EE 7     | Java EE 8   | Microprofile 1.3 
+| Wildfly 13                | x             | ?           |     
+| TomEE 7                   | x             |             |       
+| Websphere Liberty 18      | x             |             | ?   
+| Websphere Traditional 9   | x             |             |   
 |===
+
+x = Supported/tested
+
+? = Should work but not tested currently
 
 == Todos
 
-TODO
+[] Support for Java EE 8 (`--jee-version` flag is not implemted yet)
+[] Support for Payara/Glassfish
+[] Support for MicroProfile

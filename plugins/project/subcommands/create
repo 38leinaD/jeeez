@@ -33,7 +33,7 @@ usage() {
     echo "    - packages as a WAR archive (*),"
     echo "    - has group-id \"jz\","
     echo "    - has artifact-id \"myapp\","
-    echo "    - and builds with Gradle and Maven. (*)"
+    echo "    - and builds with Gradle (*)"
 }
 
 scaffold() {
