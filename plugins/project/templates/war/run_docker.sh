@@ -15,3 +15,5 @@ docker run --rm --name appsvr -p 80:8080 -v $(pwd)/build/libs/template-artifacti
 
 # Java EE 8 servers
 #docker run --rm --name appsvr -p 80:8080 -v $(pwd)/build/libs/template-artifactid.war:/opt/jboss/wildfly/standalone/deployments/template-artifactid.war jboss/wildfly:12.0.0.Final /opt/jboss/wildfly/bin/standalone.sh --server-config=standalone-full.xml -b "0.0.0.0" -Dee8.preview.mode=true
+#docker run --rm --name appsvr -p 80:8080 -v $(pwd)/build/libs/template-artifactid.war:/glassfish5/glassfish/domains/domain1/autodeploy/template-artifactid.war oracle/glassfish:5.0
+#docker run --rm --name appsvr -p 80:8080 -v $(pwd)/build/libs/template-artifactid.war:/opt/payara5/glassfish/domains/domain1/autodeploy/template-artifactid.war payara/server-full:5-SNAPSHOT
