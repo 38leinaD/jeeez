@@ -18,10 +18,28 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>2.25.1</version>
-			<scope>test</scope>
+		    <groupId>org.glassfish.jersey.core</groupId>
+		    <artifactId>jersey-client</artifactId>
+		    <version>2.26</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.glassfish.jersey.inject</groupId>
+		    <artifactId>jersey-hk2</artifactId>
+		    <version>2.26</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.glassfish.jersey.media</groupId>
+		    <artifactId>jersey-media-json-processing</artifactId>
+		    <version>2.26</version>
+		    <scope>test</scope>
+		</dependency>
+		<dependency>
+		    <groupId>org.glassfish.jersey.media</groupId>
+		    <artifactId>jersey-media-json-binding</artifactId>
+		    <version>2.26</version>
+		    <scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
