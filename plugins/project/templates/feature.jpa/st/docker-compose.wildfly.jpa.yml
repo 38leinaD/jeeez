@@ -1,0 +1,28 @@
+version: '2.1'
+services:
+  # postgres:
+  #   image: postgres:9.5
+  #   ports:
+  #     - "5433:5432"
+  # oracle:
+  #   image: wnameless/oracle-xe-11g
+  #   ports:
+  #    - "1521:1521"
+  appsvr:
+    image: jboss/wildfly:10.1.0.Final
+    command: ["/opt/jboss/wildfly/bin/standalone.sh", "--server-config=standalone-full.xml", "-b", "0.0.0.0"]
+    # PostgreSQL
+    #image: 38leinad/wildfly-10-jdbc
+    #command: ["wait-for", "postgres:5432", "--", "/opt/jboss/wildfly/bin/standalone.sh", "--server-config=standalone-full.xml", "-b", "0.0.0.0"]
+    # Oracle
+    #image: 38leinad/wildfly-10-jdbc
+    #command: ["wait-for", "oracle:1521", "--", "/opt/jboss/wildfly/bin/standalone.sh", "--server-config=standalone-full.xml", "-b", "0.0.0.0"]
+    ports:
+     - "80:8080"
+    volumes:
+     - "../template-artifactid/build/libs/template-artifactid.war:/opt/jboss/wildfly/standalone/deployments/template-artifactid.war"
+    healthcheck:
+      test: curl --fail http://127.0.0.1:8080/template-artifactid/resources/health || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 3
