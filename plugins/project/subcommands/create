@@ -124,7 +124,7 @@ scaffold() {
         log_success "Succesfully created a project with artifact-id '$artifactid' and group-id '$groupid' from template '$_template'."
         log_info $HR
         log_info "Build & run it with 'cd $artifactid; ./run_docker.sh'."
-        log_info "Open http://localhost/$artifactid/resources/health when the sever is started."
+        log_info "Open http://localhost/$artifactid/resources/health when the server is started."
         log_info $HR
     fi
     #tree -C $artifactid/
