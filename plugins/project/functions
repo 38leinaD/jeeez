@@ -20,8 +20,6 @@ to_project_coordinates() {
         jz_pj_groupid="jz"
         jz_pj_artifactid="$project_name"
     fi
-    jz_pj_folder_name=$jz_pj_artifactid
-    jz_pj_folder_path=$(pwd)/$jz_pj_folder_name
 }
 
 infer_project_details() {

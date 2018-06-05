@@ -46,45 +46,20 @@ scaffold() {
     fi
 
     if [[ "$_build" == "maven" ]]; then
-        rm -rf $jz_pj_artifactid/gradle
-        rm -f $jz_pj_artifactid/gradlew*
-        rm -f $jz_pj_artifactid/settings.gradle
-        find $jz_pj_artifactid -type f -exec sed -i "s/template-artifactid/${jz_pj_artifactid}/g" {} \;
-        find $jz_pj_artifactid -type f -name "build.gradle" -exec rm -f {} \;
+        rm -rf $jz_pj_folder_name/gradle
+        rm -f $jz_pj_folder_name/gradlew*
+        rm -f $jz_pj_folder_name/settings.gradle
+        #find $jz_pj_folder_name -type f -exec sed -i "s/template-artifactid/${jz_pj_artifactid}/g" {} \;
+        find $jz_pj_folder_name -type f -name "build.gradle" -exec rm -f {} \;
+        find $jz_pj_folder_name -type f -exec sed -i "s/build\/libs/target/g" {} \;
+
     elif [[ "$_build" == "gradle" ]]; then
-        rm -rf $jz_pj_artifactid/.mvn
-        rm -f $jz_pj_artifactid/mvnw*
-        find $jz_pj_artifactid -type f -name "pom.xml" -exec rm -f {} \;
+        rm -rf $jz_pj_folder_name/.mvn
+        rm -f $jz_pj_folder_name/mvnw*
+        find $jz_pj_folder_name -type f -name "pom.xml" -exec rm -f {} \;
     fi
-
-    (
-        cd $jz_pj_artifactid
-        write_metadata_file
-    )
     
-    if [[ "$jz_pj_artifactid" == *-st ]]; then
-        # This is a system-test project
-        # Find the main project this belongs to
-        parent_artifactid=${jz_pj_artifactid%-st}
-        if [ -d "$parent_artifactid" ]; then
-            log_info "Found parent-project @ $parent_artifactid"
-            echo "COMPOSE_PROJECT_NAME=$parent_artifactid" >> $jz_pj_artifactid/.env
-            find $jz_pj_artifactid -type f -exec sed -i "s/template-parent-artifactid/${parent_artifactid}/g" {} \;
-            
-            if [[ "$_build" == "maven" ]]; then
-                find $jz_pj_artifactid -type f -exec sed -i "s/build\/libs/target/g" {} \;
-            fi
-            (
-                APPNAME=$parent_artifactid
-                for composeFile in $jz_pj_artifactid/docker-compose*.yml; do
-                    create_file_from_template $composeFile $composeFile
-                done
-            )
-        else
-            log_err "Expected a main-project named '$parent_artifactid' but unable to find."
-            exit 1
-        fi
-
+    if [[ "$jz_pj_folder_name" == *-st ]]; then
         log_success "Succesfully created system-test project with artifact-id '$jz_pj_artifactid' and group-id '$jz_pj_groupid' from template '$_template'."
         log_info $HR
         if [[ "$_build" == "maven" ]]; then
@@ -131,8 +106,6 @@ plugin_main_cmd() {
         _template="${1#*=}"
         ;;
         --st)
-        # If we are generating a system-test project, append "-st" to project-name
-        project_name="${project_name}-st"
         _template="st"
         ;;
         --build=*)
@@ -146,6 +119,14 @@ plugin_main_cmd() {
     done
 
     to_project_coordinates $project_name
+
+    if [[ $_template == "st" ]]; then
+        # If we are generating a system-test project, append "-st" to project-name
+        jz_pj_folder_name="${jz_pj_artifactid}-st"
+    else
+        jz_pj_folder_name="${jz_pj_artifactid}"
+    fi
+    jz_pj_folder_path=$(pwd)/$jz_pj_folder_name
 
     if ! [ -d $PLUGIN_PATH/project/templates/$_template ]; then
         log_err "No template with name '$_template'"

@@ -20,7 +20,7 @@ public class HealthCheckST {
     @Before
     public void init() {
         String httpPort = System.getenv("APPSVR_HTTP_PORT") != null ? System.getenv("APPSVR_HTTP_PORT") : "80";
-        tut = ClientBuilder.newClient().target("http://localhost:" + httpPort + "/template-parent-artifactid");
+        tut = ClientBuilder.newClient().target("http://localhost:" + httpPort + "/template-artifactid");
     }
 
     @Test

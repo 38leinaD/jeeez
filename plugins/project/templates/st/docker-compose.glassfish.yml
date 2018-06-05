@@ -5,9 +5,9 @@ services:
     ports:
      - "80:8080"
     volumes:
-     - "../${APPNAME}/build/libs/${APPNAME}.war:/glassfish5/glassfish/domains/domain1/autodeploy/${APPNAME}.war"
+     - "../template-artifactid/build/libs/template-artifactid.war:/glassfish5/glassfish/domains/domain1/autodeploy/template-artifactid.war"
     healthcheck:
-      test: curl --fail http://127.0.0.1:8080/${APPNAME}/resources/health || exit 1
+      test: curl --fail http://127.0.0.1:8080/template-artifactid/resources/health || exit 1
       interval: 5s
       timeout: 10s
       retries: 3

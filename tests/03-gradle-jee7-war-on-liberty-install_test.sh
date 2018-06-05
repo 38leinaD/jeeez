@@ -16,6 +16,7 @@ test_gradle_jee7_war_on_liberty_docker() {
     # Install Wildfly
     jz liberty:install
     source .jeeez
+
     (
         cd $WLP_HOME/bin
         rm -rf $WLP_HOME/usr/servers/defaultServer
@@ -35,8 +36,6 @@ test_gradle_jee7_war_on_liberty_docker() {
         cd $WLP_HOME/bin
         ./server start
     )
-
-    trap shutdownLiberty EXIT
 
     wait_for_endpoint http://localhost:9080/myapp/resources/health
 
