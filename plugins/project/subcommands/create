@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail; [[ $JZ_TRACE ]] && set -x
 source "$PLUGIN_PATH/common/functions"
+source "$PLUGIN_PATH/project/functions"
 
 #DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
@@ -36,72 +37,46 @@ usage() {
     echo "    - and builds with Gradle (*)"
 }
 
-scaffold() {
-    local groupid=$1
-    local artifactid=$2
-    
-    cp -r $PLUGIN_PATH/project/templates/$_template $artifactid
+scaffold() {   
 
-    find $artifactid -type d -name "packagename" | while read dir; do
-        # Derive packagenames from groupid/artifactid
-        local parent=$(dirname $dir)
-        local artifact_dir="${artifactid//-/}"
-        local package_dirs="${groupid//.//}/${artifact_dir}"
-        local package_path="$parent/$package_dirs"
-        mkdir -p "$package_path"
-        mv $dir/* $package_path/ || true
-        rm -rf $dir
-    done
-
-    # Fix packagenames in Java-code
-    local java_package_name="${groupid}.${artifactid//-/}"
-    find $artifactid -type f \( -name "*.java" -o -name "build.gradle" \) -exec sed -i "s/packagename/${java_package_name}/g" {} \;
-
-    # Fix subproject folder-names
-    find $artifactid -type d -name "template-artifactid-*" -print0
-    find $artifactid -type d -name "template-artifactid-*" | while read file; do \
-        #dir=$(dirname $f)
-        #file=$(basename $f)
-        #rename "s/template-artifactid-(.*)\$/$artifactid-\$1/" $f
-        newfile=${file/template-artifactid/$artifactid}
-        mv $file $newfile
-    done;
-
-    # Set groupid/artifactid in pom.xml/build.gradle
-    find $artifactid -type f -exec sed -i "s/template-artifactid/${artifactid}/g" {} \;
-    find $artifactid -type f -exec sed -i "s/template-groupid/${groupid}/g" {} \;
+    apply_template $_template $jz_pj_folder_name
 
     if ! [[ -v JZ_CUSTOM_ROOT ]]; then
         touch .jeeez
     fi
 
     if [[ "$_build" == "maven" ]]; then
-        rm -rf $artifactid/gradle
-        rm -f $artifactid/gradlew*
-        rm -f $artifactid/settings.gradle
-        find $artifactid -type f -exec sed -i "s/template-artifactid/${artifactid}/g" {} \;
-        find $artifactid -type f -name "build.gradle" -exec rm -f {} \;
+        rm -rf $jz_pj_artifactid/gradle
+        rm -f $jz_pj_artifactid/gradlew*
+        rm -f $jz_pj_artifactid/settings.gradle
+        find $jz_pj_artifactid -type f -exec sed -i "s/template-artifactid/${jz_pj_artifactid}/g" {} \;
+        find $jz_pj_artifactid -type f -name "build.gradle" -exec rm -f {} \;
     elif [[ "$_build" == "gradle" ]]; then
-        rm -rf $artifactid/.mvn
-        rm -f $artifactid/mvnw*
-        find $artifactid -type f -name "pom.xml" -exec rm -f {} \;
+        rm -rf $jz_pj_artifactid/.mvn
+        rm -f $jz_pj_artifactid/mvnw*
+        find $jz_pj_artifactid -type f -name "pom.xml" -exec rm -f {} \;
     fi
 
-    if [[ "$artifactid" == *-st ]]; then
+    (
+        cd $jz_pj_artifactid
+        write_metadata_file
+    )
+    
+    if [[ "$jz_pj_artifactid" == *-st ]]; then
         # This is a system-test project
         # Find the main project this belongs to
-        parent_artifactid=${artifactid%-st}
+        parent_artifactid=${jz_pj_artifactid%-st}
         if [ -d "$parent_artifactid" ]; then
             log_info "Found parent-project @ $parent_artifactid"
-            echo "COMPOSE_PROJECT_NAME=$parent_artifactid" >> $artifactid/.env
-            find $artifactid -type f -exec sed -i "s/template-parent-artifactid/${parent_artifactid}/g" {} \;
+            echo "COMPOSE_PROJECT_NAME=$parent_artifactid" >> $jz_pj_artifactid/.env
+            find $jz_pj_artifactid -type f -exec sed -i "s/template-parent-artifactid/${parent_artifactid}/g" {} \;
             
             if [[ "$_build" == "maven" ]]; then
-                find $artifactid -type f -exec sed -i "s/build\/libs/target/g" {} \;
+                find $jz_pj_artifactid -type f -exec sed -i "s/build\/libs/target/g" {} \;
             fi
             (
                 APPNAME=$parent_artifactid
-                for composeFile in $artifactid/docker-compose*.yml; do
+                for composeFile in $jz_pj_artifactid/docker-compose*.yml; do
                     create_file_from_template $composeFile $composeFile
                 done
             )
@@ -110,24 +85,24 @@ scaffold() {
             exit 1
         fi
 
-        log_success "Succesfully created system-test project with artifact-id '$artifactid' and group-id '$groupid' from template '$_template'."
+        log_success "Succesfully created system-test project with artifact-id '$jz_pj_artifactid' and group-id '$jz_pj_groupid' from template '$_template'."
         log_info $HR
         if [[ "$_build" == "maven" ]]; then
-            log_info "Run them with 'cd $artifactid; ./mvnw verify'."
+            log_info "Run them with 'cd $jz_pj_artifactid; ./mvnw verify'."
         else
-            log_info "Run them with 'cd $artifactid; ./gradlew systemTestInDockerEnv'."
+            log_info "Run them with 'cd $jz_pj_artifactid; ./gradlew systemTestInDockerEnv'."
         fi
         log_info "This project only works in conjunction with the project named '$parent_artifactid' located parallel to this project."
         log_info "Make sure to run  the build on it at least once to generate the artifact to deploy."
         log_info $HR
     else
-        log_success "Succesfully created a project with artifact-id '$artifactid' and group-id '$groupid' from template '$_template'."
+        log_success "Succesfully created a project with artifact-id '$jz_pj_artifactid' and group-id '$jz_pj_groupid' from template '$_template'."
         log_info $HR
-        log_info "Build & run it with 'cd $artifactid; ./run_docker.sh'."
-        log_info "Open http://localhost/$artifactid/resources/health when the server is started."
+        log_info "Build & run it with 'cd $jz_pj_artifactid; ./run_docker.sh'."
+        log_info "Open http://localhost/$jz_pj_artifactid/resources/health when the server is started."
         log_info $HR
     fi
-    #tree -C $artifactid/
+    #tree -C $jz_pj_artifactid/
 }
 
 plugin_main_cmd() {
@@ -170,21 +145,14 @@ plugin_main_cmd() {
     shift
     done
 
-    if [[ $(expr index "$project_name" .) != "0" ]] ; then
-        # project-name contains dot and thus a group-id
-        groupid=$(echo "$project_name" | rev | cut -d"." -f2-  | rev)
-        artifactid=$(echo "$project_name" | rev | cut -d"." -f1  | rev)
-    else
-        groupid="jz"
-        artifactid="$project_name"
-    fi
+    to_project_coordinates $project_name
 
     if ! [ -d $PLUGIN_PATH/project/templates/$_template ]; then
         log_err "No template with name '$_template'"
         exit 1
     fi
 
-    scaffold $groupid $artifactid
+    scaffold
 }
 
 plugin_main_cmd "$@"
