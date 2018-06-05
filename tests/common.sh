@@ -34,3 +34,8 @@ start_wildfly_in_background() {
 prepare_for_docker_volume_mount() {
     chmod -R 777 $1
 }
+
+cd_test_workspace() {
+    cd $TEST_WORKSPACE
+    pwd
+}

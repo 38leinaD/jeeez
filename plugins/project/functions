@@ -30,6 +30,56 @@ infer_project_details() {
     else
         jz_project_build="maven"
     fi
+    
+    if [[ "$jz_project_build" == "gradle" ]]; then
+        if [ -f *-ear/build.gradle ]; then
+            jz_project_apptype="ear"
+        else
+            jz_project_apptype="war"
+        fi
+    else
+        if [ -f *-ear/pom.xml ]; then
+            jz_project_apptype="ear"
+        else
+            jz_project_apptype="war"
+        fi
+    fi
+}
+
+rewrite_app_archive_path() {
+    if [[ "$jz_pj_folder_name" == *-st ]]; then
+        relevant_build=$(cd $jz_pj_artifactid; infer_project_details; echo $jz_project_build)
+        relevant_apptype=$(cd $jz_pj_artifactid; infer_project_details; echo $jz_project_apptype)
+        log_info "Main project detected: build=$relevant_build, apptype=$relevant_apptype."
+    else
+        relevant_build=$jz_project_build
+        relevant_apptype=$jz_project_apptype
+    fi
+
+    if [[ "$relevant_build" == "maven" ]]; then
+        if [[ "$relevant_apptype" == "ear" ]]; then
+            # if ear -> template-artifactid-ear/target/template-artifactid.war
+            app_archive_path="template-artifactid-ear/target"
+            app_archive="template-artifactid.ear"
+        else
+            # if war -> target/template-artifactid.war
+            app_archive_path="target"
+            app_archive="template-artifactid.war"
+        fi  
+    else
+        if [[ "$relevant_apptype" == "ear" ]]; then
+            # if ear -> template-artifactid-ear/build/libs/template-artifactid.war
+            app_archive_path="template-artifactid-ear/build/libs"
+            app_archive="template-artifactid.ear"
+        else
+            # if war -> default
+            app_archive_path="build/libs"
+            app_archive="template-artifactid.war"
+        fi
+    fi
+
+    find $jz_pj_folder_name -type f -exec sed -i "s:build/libs:$app_archive_path:g" {} \;
+    find $jz_pj_folder_name -type f -exec sed -i "s:template-artifactid\.war:$app_archive:g" {} \;
 }
 
 apply_template() {
@@ -61,6 +111,9 @@ apply_template() {
         newfile=${file/template-artifactid/$jz_pj_artifactid}
         mv $file $newfile
     done;
+
+    # this need to happen before generic replace of template-artifactid
+    rewrite_app_archive_path
 
     # Set groupid/artifactid in pom.xml/build.gradle
     find $work_folder_name -type f -exec sed -i "s/template-artifactid/${jz_pj_artifactid}/g" {} \;

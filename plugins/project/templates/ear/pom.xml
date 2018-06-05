@@ -81,7 +81,7 @@
                      <webModule>
                         <groupId>template-groupid</groupId>
                         <artifactId>template-artifactid-war</artifactId>
-                        <contextRoot>/</contextRoot>
+                        <contextRoot>/template-artifactid</contextRoot>
                      </webModule>
 
                   </modules>

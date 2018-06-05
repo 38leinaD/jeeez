@@ -25,7 +25,9 @@ usage() {
     echo "    --jee-version=7|8 (default: 7)"
     echo "    --template=$templates (default: war)"
     echo "    --st (creates a system-test project; same as --template=st)"
+    echo "    --ear (creates an EAR project; same as --template=ear)"
     echo "    --build=gradle|maven (default: gradle)"
+    echo "    --maven (creates an Maven project; same as --build=maven)"
     echo ""
     echo "Example:"
     echo "$ jz project:create jz.myapp"
@@ -37,7 +39,28 @@ usage() {
     echo "    - and builds with Gradle (*)"
 }
 
+
+
+delete_unused_build_files() {
+    if [[ "$_build" == "maven" ]]; then
+        rm -rf $jz_pj_folder_name/gradle
+        rm -f $jz_pj_folder_name/gradlew*
+        rm -f $jz_pj_folder_name/settings.gradle
+        find $jz_pj_folder_name -type f -name "build.gradle" -exec rm -f {} \;
+    elif [[ "$_build" == "gradle" ]]; then
+        rm -rf $jz_pj_folder_name/.mvn
+        rm -f $jz_pj_folder_name/mvnw*
+        find $jz_pj_folder_name -type f -name "pom.xml" -exec rm -f {} \;
+    fi
+}
+
 scaffold() {   
+    if [[ "$jz_pj_folder_name" == *-st && ! -d $jz_pj_artifactid ]]; then
+        log_err "Main project '$jz_pj_artifactid' not found."
+        log_err "The system-test project requires a main project with name '$jz_pj_artifactid'."
+        log_err "Maybe run 'jz project:create $jz_pj_groupid.$jz_pj_artifactid' to create it?"
+        exit 1
+    fi
 
     apply_template $_template $jz_pj_folder_name
 
@@ -45,20 +68,10 @@ scaffold() {
         touch .jeeez
     fi
 
-    if [[ "$_build" == "maven" ]]; then
-        rm -rf $jz_pj_folder_name/gradle
-        rm -f $jz_pj_folder_name/gradlew*
-        rm -f $jz_pj_folder_name/settings.gradle
-        #find $jz_pj_folder_name -type f -exec sed -i "s/template-artifactid/${jz_pj_artifactid}/g" {} \;
-        find $jz_pj_folder_name -type f -name "build.gradle" -exec rm -f {} \;
-        find $jz_pj_folder_name -type f -exec sed -i "s/build\/libs/target/g" {} \;
-
-    elif [[ "$_build" == "gradle" ]]; then
-        rm -rf $jz_pj_folder_name/.mvn
-        rm -f $jz_pj_folder_name/mvnw*
-        find $jz_pj_folder_name -type f -name "pom.xml" -exec rm -f {} \;
-    fi
+    delete_unused_build_files
     
+
+    log_info $HR
     if [[ "$jz_pj_folder_name" == *-st ]]; then
         log_success "Succesfully created system-test project with artifact-id '$jz_pj_artifactid' and group-id '$jz_pj_groupid' from template '$_template'."
         log_info $HR
@@ -108,8 +121,14 @@ plugin_main_cmd() {
         --st)
         _template="st"
         ;;
+        --ear)
+        _template="ear"
+        ;;
         --build=*)
         _build="${1#*=}"
+        ;;
+        --maven)
+        _build="maven"
         ;;
         *)
         log_err "Invalid argument"
