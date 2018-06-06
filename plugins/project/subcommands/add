@@ -54,7 +54,7 @@ add_feature() {
         find . -type f -exec mv {} ${jz_pj_folder_path}-st/{} \;
     )
     
-    log_success "Succesfully added feature ${feature_name}."
+    log_success "Successfully added feature ${feature_name}."
 }
 
 plugin_main_cmd() {

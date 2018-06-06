@@ -19,7 +19,7 @@ usage() {
     templates=$(list_templates | paste -sd "|" -)
     echo "Usage: jz project:create [groupid.]artifactid [OPTIONS]"
     echo ""
-    echo "Create a Java EE project from a template"
+    echo "Creates a Java EE project from a template"
     echo ""
     echo "Options:"
     echo "    --jee-version=7|8 (default: 7)"
