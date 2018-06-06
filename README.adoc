@@ -24,7 +24,7 @@ curl https://raw.githubusercontent.com/38leinaD/jeeez/master/installer -sSf | sh
 
 ----
 $ git clone https://github.com/38leinaD/jeeez.git
-$ echo "alias jz='$(pwd)/jeeez/jz'" >> ~/.bashrc
+$ echo "\nalias jz='$(pwd)/jeeez/jz'" >> ~/.bashrc
 ----
 
 == Usage
@@ -82,7 +82,7 @@ They provide good examples of what you can achive with just a few keystrokes.
 E.g. you can also generate a system-tests project in addition to the main project.
 
 ----
-$ jz project:create de.dplatz.myapp --st         
+$ jz project:create de.dplatz.myapp --st
 [INFO] Found parent-project @ myapp
 [INFO] Succesfully created system-test project with artifact-id 'myapp-st' and group-id 'de.dplatz' from template 'st'.
 [INFO] ------------------------------------------------------------------------
@@ -116,11 +116,11 @@ TODO
 The following combinations of application-server and specifications are supported/tested.
 
 |===
-|                           | Java EE 7     | Java EE 8   | Microprofile 1.3 
-| Wildfly 13                | x             | ?           |     
-| TomEE 7                   | x             |             |       
-| Websphere Liberty 18      | x             |             | ?   
-| Websphere Traditional 9   | x             |             |   
+|                           | Java EE 7     | Java EE 8   | Microprofile 1.3
+| Wildfly 13                | x             | ?           |
+| TomEE 7                   | x             |             |
+| Websphere Liberty 18      | x             |             | ?
+| Websphere Traditional 9   | x             |             |
 |===
 
 x = Supported/tested

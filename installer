@@ -10,11 +10,11 @@ rm -f master.zip
 mv jeeez-master jeeez
 
 echo "** Adding alias 'jz' to ~/.bashrc"
-echo "alias jz='$(pwd)/jeeez/jz'" >> ~/.bashrc
+echo "\nalias jz='$(pwd)/jeeez/jz'" >> ~/.bashrc
 
 if [ -f ~/.zshrc ]; then
   echo "** Adding alias 'jz' to ~/.zshrc"
-  echo "alias jz='$(pwd)/jeeez/jz'" >> ~/.zshrc
+  echo "\nalias jz='$(pwd)/jeeez/jz'" >> ~/.zshrc
 fi
 
 alias jz='$(pwd)/jeeez/jz'
