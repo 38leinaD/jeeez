@@ -64,7 +64,7 @@ scaffold() {
 
     apply_template $_template $jz_pj_folder_name
 
-    if ! [[ -v JZ_CUSTOM_ROOT ]]; then
+    if ! [ -z ${JZ_CUSTOM_ROOT+x} ]; then
         touch .jeeez
     fi
 

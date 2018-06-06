@@ -4,7 +4,7 @@ set -o errexit # exit script on failed command
 
 shopt -s nullglob
 
-export JZ_ROOT=${JZ_ROOT:-"$(dirname "$(readlink -f "$0")")"}
+export JZ_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 export PLUGIN_PATH=${PLUGIN_PATH:="$JZ_ROOT/plugins"}
 
 source "$PLUGIN_PATH/common/functions"

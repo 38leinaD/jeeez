@@ -12,7 +12,7 @@ source_metadata_file() {
 }
 
 to_project_coordinates() {
-    if [[ $(expr index "$project_name" .) != "0" ]] ; then
+    if echo "$project_name" | grep -q "\." ; then
         # project-name contains dot and thus a group-id
         jz_pj_groupid=$(echo "$project_name" | rev | cut -d"." -f2-  | rev)
         jz_pj_artifactid=$(echo "$project_name" | rev | cut -d"." -f1  | rev)
