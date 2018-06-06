@@ -3,16 +3,25 @@
 image::https://api.travis-ci.org/38leinaD/jeeez.svg[]
 
 
-JEEEZ (short: jz) is a command-line scaffolding tool that gets you started on developing a Java EE application in seconds.
-It's just a set of Bash-scripts; so it should be running on most flavors of Linux, Unix, MacOSX and for Windows under Cygwin or MSYS.
-Assuming you have Docker installed, you will even get your application deployed in seconds.
+JEEEZ is a command-line scaffolding tool that gets you started on developing a Java EE application in seconds.
+It's just a set of Bash-scripts; so it should be running on most flavors of Linux, Unix, MacOS X and for Windows under Cygwin or MSYS.
 
-The tool is simple and optionated to serve my needs in demos and trainings.
-It was originally created due to the non-existing scaffolding/archetype-mechanism in Gradle.
+As the scaffoled projects come with Docker Compose files for most application-servers, it is helpful to have the `docker` and `docker-compose` commands installed.
+By this, you will be able to depoy and test your application right from the start and without the need to install an application-server.
 
-As I am using Gradle mainly, the tools is tested more thoroghly with Gradle. But Maven templates and support should still work fairly good.
+But in case you want to locally install an application-server, the tool will also help you to do this.
+It can download, extract and configure major application-servers with just a single command.
+
+The tool was originally created due to the non-existing scaffolding/archetype-mechanism in Gradle but has grown beyond what e.g. archetypes in Maven can do.
+If you use the tool, you will notice soon that it is powerful but also optionated because it needs to serve my needs in demos and trainings.
+But that does not mean in cannot be useful to others.
+
+Also note that I am using mostly Gradle nowadays. So, Gradle is tested more thoroughly by me.
+But still, the tool supports Maven to a large extent and I am always trying to make sure to keep it on par with Gradle.
 
 == Installation
+
+Installation can be done from the commandline.
 
 === Automatic
 
@@ -71,19 +80,18 @@ $ jz project:create de.dplatz.myapp
 === Maven
 
 ----
-$ jz project:create de.dplatz.myapp --build=maven
+$ jz project:create de.dplatz.myapp --maven
 ----
 
 === System Tests
 
-Have a check in the folder `test` for the test-scripts of this tool.
-They provide good examples of what you can achive with just a few keystrokes.
+Have a check in the folder `test` for the CI-test-scripts of JEEEZ.
+They provide good examples of what you can achive with this tool
 
 E.g. you can also generate a system-tests project in addition to the main project.
 
 ----
-$ jz project:create de.dplatz.myapp --st
-[INFO] Found parent-project @ myapp
+$ jz project:create de.dplatz.myapp --st         
 [INFO] Succesfully created system-test project with artifact-id 'myapp-st' and group-id 'de.dplatz' from template 'st'.
 [INFO] ------------------------------------------------------------------------
 [INFO] Run them with 'cd myapp-st; ./gradlew systemTestInDockerEnv'.
@@ -93,7 +101,7 @@ $ jz project:create de.dplatz.myapp --st
 $ cd myapp-st; ./gradlew systemTestInDockerEnv
 ----
 
-System-tests are run against a docker-compose-based environment. See the myapp-st project for docker-compose.yml files for various application-servers.
+System-tests are run against a Docker Compose-based environment. See the myapp-st project for docker-compose.yml files for various application-servers.
 The default being used in the docker-compose.yml is Wildfly. But to e.g. test against Websphere Liberty, just run:
 
 ----
@@ -106,21 +114,35 @@ Docker compose files are provided for the following application-servers:
 * TomEE 7
 * Websphere Liberty 18
 * Websphere Traditional 9
+* Glassfish 5
+* Payara 5
 
 === EARs
 
-TODO
+EAR-files have grown unpopular in modern Java EE but I sometimes still need to test Java EE features with EAR-packaged applications.
+That's why you can also generate them:
+
+----
+$ jz project:create de.dplatz.myapp --ear
+[INFO] Succesfully created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'ear'.
+[INFO] ------------------------------------------------------------------------
+[INFO] Build & run it with 'cd myapp; ./run_docker.sh'.
+[INFO] Open http://localhost/myapp/resources/health when the sever is started.
+[INFO] ------------------------------------------------------------------------
+----
 
 === Supported Application Servers
 
 The following combinations of application-server and specifications are supported/tested.
 
 |===
-|                           | Java EE 7     | Java EE 8   | Microprofile 1.3
-| Wildfly 13                | x             | ?           |
-| TomEE 7                   | x             |             |
-| Websphere Liberty 18      | x             |             | ?
-| Websphere Traditional 9   | x             |             |
+|                           | Java EE 7     | Java EE 8   | Microprofile 1.3 
+| Wildfly 13                | x             | ?           |     
+| TomEE 7                   | x             |             |       
+| Websphere Liberty 18      | x             |             | ?   
+| Websphere Traditional 9   | x             |             |   
+| Glassfish 5               | x             | x           |   
+| Payara 5                  | x             | x           | x   
 |===
 
 x = Supported/tested
@@ -129,6 +151,5 @@ x = Supported/tested
 
 == Todos
 
-[] Support for Java EE 8 (`--jee-version` flag is not implemted yet)
-[] Support for Payara/Glassfish
-[] Support for MicroProfile
+* Support for Java EE 8 (`--jee-version` flag is not implemted yet)
+* Support for MicroProfile
