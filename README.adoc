@@ -6,8 +6,8 @@ image::https://api.travis-ci.org/38leinaD/jeeez.svg[]
 JEEEZ is a command-line scaffolding tool that gets you started on developing a Java EE application in seconds.
 It's just a set of Bash-scripts; so it should be running on most flavors of Linux, Unix, MacOS X and for Windows under Cygwin or MSYS.
 
-As the scaffoled projects come with Docker Compose files for most application-servers, it is helpful to have the `docker` and `docker-compose` commands installed.
-By this, you will be able to depoy and test your application right from the start and without the need to install an application-server.
+As the scaffold-projects come with Docker Compose files for most application-servers, it is helpful to have `docker` and `docker-compose` commands installed.
+By this, you will be able to deploy and test your application right from the start and without the need to install an application-server.
 
 But in case you want to locally install an application-server, the tool will also help you to do this.
 It can download, extract and configure major application-servers with just a single command.
