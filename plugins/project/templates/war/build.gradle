@@ -21,6 +21,11 @@ dependencies {
     testCompile 'org.mockito:mockito-core:2.10.0'
 }
 
+test {
+    // Only run unit-tests. E.g. don't run integration-tests with suffix 'IT'
+    include '**/*Test.class'
+}
+
 war {
 	archiveName 'template-artifactid.war'
 }
