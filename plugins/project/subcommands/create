@@ -70,6 +70,10 @@ scaffold() {
 
     delete_unused_build_files
     
+    if [ -f $jz_pj_folder_name/.gitignore ]; then
+        # Ignore .vscode-folder
+        echo ".vscode" >> $jz_pj_folder_name/.gitignore
+    fi
 
     log_info $HR
     if [[ "$jz_pj_folder_name" == *-st ]]; then

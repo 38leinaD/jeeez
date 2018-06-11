@@ -2,7 +2,6 @@
 .gradle
 .project
 .settings
-.vscode
 bin
 build
 target
