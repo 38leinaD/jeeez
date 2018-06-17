@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $JZ_TRACE ]] && set -x
+source "$PLUGIN_PATH/common/functions"
+source "$PLUGIN_PATH/database/functions"
+
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+usage() {
+    echo "Usage: jz payara:jdbc postgresql|oracle|derby"
+    echo ""
+    echo "???"
+}
+
+plugin_main_cmd() {
+
+    if [ "$1" == "" ]; then
+        usage
+        exit 1
+    fi
+
+    database_type=$1
+    shift
+
+    download_jdbc_driver $database_type
+
+    jdbc_driver_path=$(get_jdbc_driver_path $database_type)
+    jdbc_driver_file=$(basename $jdbc_driver_path)
+
+    JZ_JEE_VERSION=7
+
+    #POSTGRES_JDBC_JAR=${POSTGRES_JDBC_JAR:-postgresql-9.4.1209.jar}
+    PAYARA_DOMAIN=${PAYARA_DOMAIN:-domain1}
+
+    if [ ! -d $PAYARA_HOME/glassfish/domains/$PAYARA_DOMAIN ]; then
+        log_err "Variable PAYARA_DOMAIN is set to '$PAYARA_DOMAIN'. No domain named like this exists."
+        exit 1
+    fi
+
+    if [ ! -f $PAYARA_HOME/glassfish/domains/$PAYARA_DOMAIN/lib/ext/$jdbc_driver_file ]; then
+        cp $jdbc_driver_path $PAYARA_HOME/glassfish/domains/$PAYARA_DOMAIN/lib/ext/
+    fi
+
+    (
+        cd $PAYARA_HOME/bin
+        ./asadmin start-domain ${PAYARA_DOMAIN}
+        ./asadmin create-jdbc-connection-pool \
+            --datasourceclassname org.postgresql.xa.PGXADataSource \
+            --restype javax.sql.XADataSource \
+            --property user=postgres:password=postgres:DatabaseName=postgres:ServerName=localhost:port=5432 \
+            POSTGRES_POOL
+        ./asadmin create-jdbc-resource \
+            --connectionpoolid POSTGRES_POOL POSTGRES
+        ./asadmin stop-domain ${PAYARA_DOMAIN}
+    )
+
+    log_success "Succesfully configured $database_type JDBC-Connector in Payara."
+}
+
+plugin_main_cmd "$@"
