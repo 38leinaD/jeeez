@@ -9,9 +9,10 @@
 	<title>hello world</title>
 </h:head>
 <h:body>
-	<h:form>
-        <h:commandButton action="#{index.clicked()}" value="Click me" />
-        <div jsf:id="output">#{index.output()}</div>
+	<h:form prependId="false">
+		<input type="text" jsf:id="input" value="#{index.input}"/>
+		<h:commandButton action="#{index.clicked}" value="Click me" />
+		<div jsf:id="output">#{index.output}</div>
 	</h:form>
 </h:body>
 
