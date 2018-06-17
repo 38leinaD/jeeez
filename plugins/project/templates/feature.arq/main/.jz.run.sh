@@ -16,6 +16,10 @@ task integrationTest(type: Test) {
     description 'Run integration-tests'
     dependsOn 'build'
     include '**/*IT.class'
+    systemProperties = [
+        "arq.extension.webdriver.browser": "chrome",
+        //"arq.extension.webdriver.chromeDriverBinary": "",
+    ]
 }
 EOF
 
