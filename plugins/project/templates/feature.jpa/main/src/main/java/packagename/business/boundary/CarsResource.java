@@ -31,6 +31,9 @@ public class CarsResource {
 		return cars;
 	}
 	
+	/**
+	 * curl -i -X POST -d '{"model": "tesla"}' -H "Content-Type: application/json"  http://localhost:8080/template-artifactid/resources/cars
+	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
