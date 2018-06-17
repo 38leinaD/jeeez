@@ -1,0 +1,14 @@
+<arquillian xmlns="http://jboss.com/arquillian" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+    <extension qualifier="webdriver">
+        <!-- <property name="browser">chrome</property> -->
+        <!-- Chrome: https://sites.google.com/a/chromium.org/chromedriver/downloads -->
+        <!-- Set below, or add to PATH -->
+        <!-- <property name="chromeDriverBinary">/home/daniel/dev/tools/chromedriver</property> -->
+    </extension>
+
+	<extension name="graphene">
+		<property name="url">http://localhost:80/template-artifactid</property>
+	</extension>
+</arquillian>
