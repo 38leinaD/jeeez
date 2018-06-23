@@ -1,0 +1,15 @@
+version: '2.1'
+services:
+  appsvr:
+    #image: 38leinad/wlp-javaee7-jdbc:latest
+    #image: openliberty/open-liberty:javaee7
+    image: websphere-liberty:javaee7
+    ports:
+     - "80:9080"
+    volumes:
+     - "./build/libs/template-artifactid.war:/config/dropins/template-artifactid.war"
+    healthcheck:
+      test: wget --quiet --tries=1 --spider http://localhost:9080/template-artifactid/resources/health || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 3

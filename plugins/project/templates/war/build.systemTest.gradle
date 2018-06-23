@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.avast.gradle:gradle-docker-compose-plugin:0.7.1"
+    }
+}
+
+apply plugin: com.avast.gradle.dockercompose.DockerComposePlugin
+
+dependencies {
+    // jax-rs client
+    testCompile 'org.glassfish.jersey.core:jersey-client:2.26'
+	testCompile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
+	testCompile 'org.glassfish.jersey.media:jersey-media-json-processing:2.26'
+	testCompile 'org.glassfish.jersey.media:jersey-media-json-binding:2.26'
+}
+
+
+task systemTestClientOnly(type: Test) {
+    group 'verification'
+    description 'Run system-tests (without environment)'
+    dependsOn 'build'
+    // Always be able to trigger this; even without code-change.
+    outputs.upToDateWhen {
+        return false
+    }
+    include '**/*ST.class'
+
+}
+
+task systemTest(type: Test) {
+    group 'verification'
+    description 'Run system-tests (in Docker environment)'
+    dependsOn 'build'
+
+    include '**/*ST.class'
+    doFirst {
+        dockerCompose.exposeAsEnvironment(systemTest)
+    }
+}
+
+dockerCompose {
+    useComposeFiles = [project.hasProperty('composeFile') ? project.getProperty('composeFile') : 'docker-compose.yml']
+    captureContainersOutput = true
+    waitForHealthyStateTimeout = java.time.Duration.ofSeconds(60)
+    isRequiredBy(project.tasks.systemTest)
+}

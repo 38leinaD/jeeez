@@ -12,11 +12,7 @@ test_maven_jee7_war_on_tomee_docker() {
         cd myapp
         ./gradlew --console=plain build
         prepare_for_docker_volume_mount build/libs
-    )
-    jz project:create myapp --st
-    (
-        cd myapp-st
-        ./gradlew --console=plain systemTestInDockerEnv
+        ./gradlew --console=plain systemTest
         assertEquals 0 $?
     )
 }

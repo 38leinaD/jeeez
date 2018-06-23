@@ -1,6 +1,7 @@
 apply plugin: 'war'
 apply plugin: 'maven'
 apply plugin: 'eclipse-wtp'
+apply from: 'build.systemTest.gradle'
 
 group = 'template-groupid'
 version = '1.0-SNAPSHOT'
