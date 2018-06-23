@@ -45,8 +45,7 @@ delete_unused_build_files() {
     if [[ "$_build" == "maven" ]]; then
         rm -rf $jz_pj_folder_name/gradle
         rm -f $jz_pj_folder_name/gradlew*
-        rm -f $jz_pj_folder_name/settings.gradle
-        find $jz_pj_folder_name -type f -name "build.gradle" -exec rm -f {} \;
+        find $jz_pj_folder_name -type f -name "*.gradle" -exec rm -f {} \;
     elif [[ "$_build" == "gradle" ]]; then
         rm -rf $jz_pj_folder_name/.mvn
         rm -f $jz_pj_folder_name/mvnw*
