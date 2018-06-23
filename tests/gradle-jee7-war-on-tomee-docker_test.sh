@@ -16,7 +16,7 @@ test_gradle_jee7_war_on_tomee_docker() {
     jz project:create myapp --st
     (
         cd myapp-st
-        ./gradlew --console=plain systemTestInDockerEnv -PcomposeFile=docker-compose.tomee.yml
+        ./gradlew --console=plain systemTest -PcomposeFile=docker-compose.tomee.yml
         assertEquals 0 $?
     )
 }

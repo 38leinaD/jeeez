@@ -16,7 +16,7 @@ test_gradle_jee7_war_on_was_docker() {
     jz project:create myapp --st
     (
         cd myapp-st
-        ./gradlew --console=plain systemTestInDockerEnv -PcomposeFile=docker-compose.was.yml
+        ./gradlew --console=plain systemTest -PcomposeFile=docker-compose.was.yml
         assertEquals 0 $?
     )
 }

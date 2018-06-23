@@ -72,8 +72,10 @@ Now, lets scaffold, build and deploy a Java EE app.
 $ jz project:create de.dplatz.myapp
 [INFO] Succesfully created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'war'.
 [INFO] ------------------------------------------------------------------------
-[INFO] Build & run it with 'cd myapp; ./run_docker.sh'.
-[INFO] Open http://localhost/myapp/resources/health when the sever is started.
+[INFO] Build & run it with './run_docker.sh'.
+[INFO] Open http://localhost/myapp/resources/health when the server is started.
+[INFO] ------------------------------------------------------------------------
+[INFO] Build, run & system-test it with './gradlew systemTest'.
 [INFO] ------------------------------------------------------------------------
 ----
 
@@ -88,13 +90,13 @@ $ jz project:create de.dplatz.myapp --maven
 Have a check in the folder `test` for the CI-test-scripts of JEEEZ.
 They provide good examples of what you can achive with this tool
 
-E.g. you can also generate a system-tests project in addition to the main project.
+E.g. you can also generate a seperate system-tests project in addition to the main project.
 
 ----
 $ jz project:create de.dplatz.myapp --st         
 [INFO] Succesfully created system-test project with artifact-id 'myapp-st' and group-id 'de.dplatz' from template 'st'.
 [INFO] ------------------------------------------------------------------------
-[INFO] Run them with 'cd myapp-st; ./gradlew systemTestInDockerEnv'.
+[INFO] Run them with './gradlew systemTestInDockerEnv'.
 [INFO] This project only works in conjunction with the project named 'myapp' located parallel to this project.
 [INFO] Make sure to run  the build on it at least once to generate the artifact to deploy.
 [INFO] ------------------------------------------------------------------------
@@ -117,6 +119,8 @@ Docker compose files are provided for the following application-servers:
 * Glassfish 5
 * Payara 5
 
+WARN: The Maven template currently only supports a seperate system-test project. The Gradle war-template has the system-tests included already.
+
 === EARs
 
 EAR-files have grown unpopular in modern Java EE but I sometimes still need to test Java EE features with EAR-packaged applications.
@@ -126,7 +130,7 @@ That's why you can also generate them:
 $ jz project:create de.dplatz.myapp --ear
 [INFO] Succesfully created a project with artifact-id 'myapp' and group-id 'de.dplatz' from template 'ear'.
 [INFO] ------------------------------------------------------------------------
-[INFO] Build & run it with 'cd myapp; ./run_docker.sh'.
+[INFO] Build & run it with './run_docker.sh'.
 [INFO] Open http://localhost/myapp/resources/health when the sever is started.
 [INFO] ------------------------------------------------------------------------
 ----

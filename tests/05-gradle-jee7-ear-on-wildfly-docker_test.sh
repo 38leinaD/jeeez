@@ -16,7 +16,7 @@ test_gradle_jee7_ear_on_wildfly_docker() {
     jz project:create myapp --st
     (
         cd myapp-st
-        ./gradlew --console=plain systemTestInDockerEnv
+        ./gradlew --console=plain systemTest
         assertEquals 0 $?
     )
 }

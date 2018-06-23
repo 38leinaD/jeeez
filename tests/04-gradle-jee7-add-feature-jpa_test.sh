@@ -16,7 +16,7 @@ test_gradle_jee7_war_on_liberty_docker() {
     )
     (
         cd myapp-st
-        ./gradlew --console=plain systemTestInDockerEnv -PcomposeFile=docker-compose.wildfly.jpa.yml
+        ./gradlew --console=plain systemTest -PcomposeFile=docker-compose.wildfly.jpa.yml
         assertEquals 0 $?
     )
     

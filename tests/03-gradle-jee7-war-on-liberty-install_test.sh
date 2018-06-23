@@ -44,7 +44,7 @@ test_gradle_jee7_war_on_liberty_docker() {
     (
         cd myapp-st
         export APPSVR_HTTP_PORT=9080
-        ./gradlew --console=plain systemTest
+        ./gradlew --console=plain systemTestClientOnly
         assertEquals 0 $?
     )
 }

@@ -29,9 +29,9 @@ test {
     exclude '**/*ST.class'
 }
 
-task systemTest(type: Test) {
+task systemTestClientOnly(type: Test) {
     group 'verification'
-    description 'Run system-tests'
+    description 'Run system-tests (without environment)'
     dependsOn 'build'
     outputs.upToDateWhen {
         return false
@@ -40,16 +40,16 @@ task systemTest(type: Test) {
 
 }
 
-task systemTestInDockerEnv(type: Test) {
+task systemTest(type: Test) {
     group 'verification'
-    description 'Run system-tests in Docker environment'
+    description 'Run system-tests (in Docker environment)'
     dependsOn 'build'
     outputs.upToDateWhen {
         return false
     }
     include '**/*ST.class'
     doFirst {
-        dockerCompose.exposeAsEnvironment(systemTestInDockerEnv)
+        dockerCompose.exposeAsEnvironment(systemTest)
     }
 }
 
@@ -57,5 +57,5 @@ dockerCompose {
     useComposeFiles = [project.hasProperty('composeFile') ? project.getProperty('composeFile') : 'docker-compose.yml']
     captureContainersOutput = true
     waitForHealthyStateTimeout = java.time.Duration.ofSeconds(60)
-    isRequiredBy(project.tasks.systemTestInDockerEnv)
+    isRequiredBy(project.tasks.systemTest)
 }

@@ -79,9 +79,9 @@ scaffold() {
         log_success "Succesfully created system-test project with artifact-id '$jz_pj_artifactid' and group-id '$jz_pj_groupid' from template '$_template'."
         log_info $HR
         if [[ "$_build" == "maven" ]]; then
-            log_info "Run them with 'cd $jz_pj_artifactid; ./mvnw verify'."
+            log_info "Run them with '${BOLD}./mvnw verify${RESTORE}'."
         else
-            log_info "Run them with 'cd $jz_pj_artifactid; ./gradlew systemTestInDockerEnv'."
+            log_info "Run them with '${BOLD}./gradlew systemTest${RESTORE}'."
         fi
         log_info "This project only works in conjunction with the project named '$parent_artifactid' located parallel to this project."
         log_info "Make sure to run  the build on it at least once to generate the artifact to deploy."
@@ -89,8 +89,13 @@ scaffold() {
     else
         log_success "Succesfully created a project with artifact-id '$jz_pj_artifactid' and group-id '$jz_pj_groupid' from template '$_template'."
         log_info $HR
-        log_info "Build & run it with 'cd $jz_pj_artifactid; ./run_docker.sh'."
+        log_info "Build & run it with '${BOLD}./run_docker.sh${RESTORE}'."
         log_info "Open http://localhost/$jz_pj_artifactid/resources/health when the server is started."
+
+        if [[ "$_build" == "gradle" ]]; then
+            log_info $HR
+            log_info "Build, run & system-test it with '${BOLD}./gradlew systemTest${RESTORE}'."
+        fi
         log_info $HR
     fi
     #tree -C $jz_pj_artifactid/

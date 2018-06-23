@@ -16,7 +16,7 @@ test_gradle_jee7_war_on_liberty_docker() {
     jz project:create myapp --st
     (
         cd myapp-st
-        ./gradlew --console=plain systemTestInDockerEnv -PcomposeFile=docker-compose.wlp.yml
+        ./gradlew --console=plain systemTest -PcomposeFile=docker-compose.wlp.yml
         assertEquals 0 $?
     )
 }

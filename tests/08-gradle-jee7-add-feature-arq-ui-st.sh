@@ -16,7 +16,7 @@ test_gradle_jee7_feature_arquillian() {
     )    
     (
         cd myapp-st
-        ./gradlew --console=plain --info systemTestInDockerEnv
+        ./gradlew --console=plain --info systemTest
         assertEquals 0 $?
     )
 }

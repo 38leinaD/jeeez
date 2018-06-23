@@ -29,7 +29,7 @@ testPayaraInstall() {
     (
         cd myapp-st
         export APPSVR_HTTP_PORT=8080
-        ./gradlew --console=plain systemTest
+        ./gradlew --console=plain systemTestClientOnly
         assertEquals 0 $?
     )
 }
