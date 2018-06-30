@@ -1,4 +1,4 @@
-package packagename.business.boundary;
+package packagename.business;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
