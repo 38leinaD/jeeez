@@ -6,27 +6,29 @@ source "$PLUGIN_PATH/common/functions"
 
 plugin_main_cmd() {
 
-    if [ ! -f $JZ_CACHE/openliberty-18.0.0.1.zip ]; then
-        log_info "Downloading openliberty-18.0.0.1.zip to $JZ_CACHE ..."
-        curl https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/release/2018-03-09_2209/openliberty-18.0.0.1.zip -o $JZ_CACHE/openliberty-18.0.0.1.zip
+    if [ ! -f $JZ_CACHE/${JZ_LIBERTY_DISTRIBUTION} ]; then
+        log_info "Downloading ${JZ_LIBERTY_DISTRIBUTION} to $JZ_CACHE ..."
+        curl https://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/runtime/release/2018-06-19_0502/${JZ_LIBERTY_DISTRIBUTION} -o $JZ_CACHE/${JZ_LIBERTY_DISTRIBUTION}
     fi
 
-    if [ -d openliberty-18.0.0.1 ]; then
-        log_err "A folder openliberty-18.0.0.1 already exists. Maybe delete it and try again."
+    local distribution=${JZ_LIBERTY_DISTRIBUTION%.zip}
+
+    if [ -d ${distribution} ]; then
+        log_err "A folder ${distribution} already exists. Maybe delete it and try again."
         exit 1
     fi
-    log_info "Extracting openliberty-18.0.0.1.zip to this directory ..."
-    unzip $JZ_CACHE/openliberty-18.0.0.1.zip > /dev/null
-    mv wlp openliberty-18.0.0.1
+    log_info "Extracting ${JZ_LIBERTY_DISTRIBUTION} to this directory ..."
+    unzip $JZ_CACHE/${JZ_LIBERTY_DISTRIBUTION} > /dev/null
+    mv wlp ${distribution}
 
     if [[ "${JZ_CUSTOM_RC}" == "" ]]; then
         export JZ_CUSTOM_RC=$(pwd)/.jeeez
     fi
 
-    echo "export WLP_HOME=$(pwd)/openliberty-18.0.0.1" >> $JZ_CUSTOM_RC
+    echo "export WLP_HOME=$(pwd)/${distribution}" >> $JZ_CUSTOM_RC
     log_success "Done."
     log_hr
-    log_info "You can start Liberty with full Java EE 7 profile by running 'cd openliberty-18.0.0.1/bin; ./server create --template=javaee7; ./server run'."
+    log_info "You can start Liberty with full Java EE 7 profile by running 'cd ${distribution}/bin; ./server create --template=javaee7; ./server run'."
     log_info "For Java EE 8, get the latest 'Development build' from https://openliberty.io/downloads/. Extract it and run './server create --template=javaee8'; ./server run'."
     # TODO: Support for Development Builds/Java EE 8
 }

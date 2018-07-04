@@ -43,7 +43,7 @@ esac
 
 [[ -f ~/.jeeez/config ]] && source ~/.jeeez/config
 [[ -d ~/.jeeez ]] && for f in ~/.jeeez/config-$JZ_DISTRO/*; do source "$f"; done
-[[ -f $JZ_ROOT/.jeeez-$JZ_DISTRO ]] && source "$JZ_ROOT/.jeeez-$JZ_DISTRO"
+[[ -f $JZ_ROOT/jeeez.config ]] && source "$JZ_ROOT/jeeez.config"
 
 [[ $JZ_TRACE ]] && set -x
 export JZ_LOGS=~/.jeeez/logs
