@@ -52,8 +52,8 @@ rewrite_app_archive_path() {
         relevant_apptype=$(cd $jz_pj_artifactid; infer_project_details; echo $jz_project_apptype)
         log_info "Main project detected: build=$relevant_build, apptype=$relevant_apptype."
     else
-        relevant_build=$jz_project_build
-        relevant_apptype=$jz_project_apptype
+        relevant_build=$(infer_project_details; echo $jz_project_build)
+        relevant_apptype=$(infer_project_details; echo $jz_project_apptype)
     fi
 
     if [[ "$relevant_build" == "maven" ]]; then
