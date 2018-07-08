@@ -23,8 +23,6 @@ to_project_coordinates() {
 }
 
 infer_project_details() {
-    local project_folder=$1
-
     if [ -f build.gradle ]; then
         jz_project_build="gradle"
     else
@@ -52,8 +50,8 @@ rewrite_app_archive_path() {
         relevant_apptype=$(cd $jz_pj_artifactid; infer_project_details; echo $jz_project_apptype)
         log_info "Main project detected: build=$relevant_build, apptype=$relevant_apptype."
     else
-        relevant_build=$(infer_project_details; echo $jz_project_build)
-        relevant_apptype=$(infer_project_details; echo $jz_project_apptype)
+        relevant_build=$(cd $work_folder_name; infer_project_details; echo $jz_project_build)
+        relevant_apptype=$(cd $work_folder_name; infer_project_details; echo $jz_project_apptype)
     fi
 
     if [[ "$relevant_build" == "maven" ]]; then
