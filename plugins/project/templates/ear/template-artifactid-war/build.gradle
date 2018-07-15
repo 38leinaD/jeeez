@@ -2,7 +2,7 @@ apply plugin: 'war'
 
 dependencies {
 	compileOnly project(':template-artifactid-ejb')
-	//compile 'org.primefaces:primefaces:6.1'
+	//compile 'org.primefaces:primefaces:6.2'
 }
 
 war {
