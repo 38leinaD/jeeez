@@ -76,8 +76,8 @@ rewrite_app_archive_path() {
         fi
     fi
 
-    find $jz_pj_folder_name -type f -exec sed -i "s:build/libs:$app_archive_path:g" {} \;
-    find $jz_pj_folder_name -type f -exec sed -i "s:template-artifactid\.war:$app_archive:g" {} \;
+    find $jz_pj_folder_name -type f -and \( -name "*.yml" -or -name "run_docker.sh" \) -exec sed -i "s:build/libs:$app_archive_path:g" {} \;
+    find $jz_pj_folder_name -type f -and \( -name "*.yml" -or -name "run_docker.sh" \) -exec sed -i "s:template-artifactid\.war:$app_archive:g" {} \;
 }
 
 apply_template() {
