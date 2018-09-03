@@ -6,26 +6,29 @@ source "$PLUGIN_PATH/common/functions"
 
 plugin_main_cmd() {
 
-    if [ ! -f $JZ_CACHE/wildfly-13.0.0.Final.zip ]; then
-        log_info "Downloading wildfly-13.0.0.Final.zip to $JZ_CACHE ..."
-        curl http://download.jboss.org/wildfly/13.0.0.Final/wildfly-13.0.0.Final.zip -o $JZ_CACHE/wildfly-13.0.0.Final.zip
+    dist_zip="wildfly-14.0.0.Final.zip"
+
+    if [ ! -f $JZ_CACHE/${dist_zip} ]; then
+        log_info "Downloading ${dist_zip} to $JZ_CACHE ..."
+        curl http://download.jboss.org/wildfly/14.0.0.Final/wildfly-14.0.0.Final.zip -o $JZ_CACHE/${dist_zip}
     fi
 
-    if [ -d wildfly-13.0.0.Final ]; then
-        log_err "A folder wildfly-13.0.0.Final already exists. Maybe delete it and try again."
+    if [ -d ${dist_zip} ]; then
+        log_err "A folder ${dist_zip} already exists. Maybe delete it and try again."
         exit 1
     fi
-    log_info "Extracting wildfly-13.0.0.Final.zip to this directory ..."
-    unzip $JZ_CACHE/wildfly-13.0.0.Final.zip > /dev/null
+    log_info "Extracting ${dist_zip} to this directory ..."
+    unzip $JZ_CACHE/${dist_zip} > /dev/null
 
     if [[ "${JZ_CUSTOM_RC}" == "" ]]; then
         export JZ_CUSTOM_RC=$(pwd)/.jeeez
     fi
 
-    echo "export JBOSS_HOME=$(pwd)/wildfly-13.0.0.Final" >> $JZ_CUSTOM_RC
+    folder_name=${dist_zip%.zip}
+
+    echo "export JBOSS_HOME=$(pwd)/$folder_name" >> $JZ_CUSTOM_RC
     log_success "Done."
-    log_success "You can start Wildfly with full Java EE 7 profile by running 'cd wildfly-13.0.0.Final/bin; ./standalone.sh -c standalone-full.xml'."
-    log_success "You can start Wildfly with full Java EE 8 profile by running 'cd wildfly-13.0.0.Final/bin; ./standalone.sh -c standalone-ee8.xml'."
+    log_success "You can start Wildfly by running 'cd $folder_name/bin; ./standalone.sh -c standalone-full.xml'."
     # TODO: create a run_wildfly.sh in project
 }
 
