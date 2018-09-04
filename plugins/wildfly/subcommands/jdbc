@@ -43,13 +43,6 @@ plugin_main_cmd() {
         echo "JDBC_DRIVER_PATH=${jdbc_driver_path}" >> /var/tmp/env.properties
         ./bin/jboss-cli.sh --file=$PLUGIN_PATH/wildfly/cli-scripts/jdbc-${database_type}.cli --properties=/var/tmp/env.properties
         log_success "Done. Check '$JBOSS_HOME/standalone/configuration/$SERVER_CONFIG' for details."
-
-        SERVER_CONFIG="standalone-ee8.xml"
-        log_info "Configuring $database_type JDBC Driver in ${SERVER_CONFIG}."
-        echo "SERVER_CONFIG=$SERVER_CONFIG" > /var/tmp/env.properties
-        echo "JDBC_DRIVER_PATH=${jdbc_driver_path}" >> /var/tmp/env.properties
-        ./bin/jboss-cli.sh --file=$PLUGIN_PATH/wildfly/cli-scripts/jdbc-${database_type}.cli --properties=/var/tmp/env.properties
-        log_success "Done. Check '$JBOSS_HOME/standalone/configuration/$SERVER_CONFIG' for details."
     )
     rm -f /var/tmp/env.properties
     
