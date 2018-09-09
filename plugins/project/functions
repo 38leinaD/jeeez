@@ -80,6 +80,18 @@ rewrite_app_archive_path() {
     find $jz_pj_folder_name -type f -and \( -name "*.yml" -or -name "run_docker.sh" \) -exec sed -i "s:template-artifactid\.war:$app_archive:g" {} \;
 }
 
+delete_unused_build_files() {
+    if [[ "$_build" == "maven" ]]; then
+        rm -rf $jz_pj_folder_name/gradle
+        rm -f $jz_pj_folder_name/gradlew*
+        find $jz_pj_folder_name -type f -name "*.gradle" -exec rm -f {} \;
+    elif [[ "$_build" == "gradle" ]]; then
+        rm -rf $jz_pj_folder_name/.mvn
+        rm -f $jz_pj_folder_name/mvnw*
+        find $jz_pj_folder_name -type f -name "pom.xml" -exec rm -f {} \;
+    fi
+}
+
 apply_template() {
     local template_name=$1
     local work_folder_name=$2
@@ -109,6 +121,8 @@ apply_template() {
         newfile=${file/template-artifactid/$jz_pj_artifactid}
         mv $file $newfile
     done;
+
+    delete_unused_build_files
 
     # this need to happen before generic replace of template-artifactid
     rewrite_app_archive_path

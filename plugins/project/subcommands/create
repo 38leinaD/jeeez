@@ -39,20 +39,6 @@ usage() {
     echo "    - and builds with Gradle (*)"
 }
 
-
-
-delete_unused_build_files() {
-    if [[ "$_build" == "maven" ]]; then
-        rm -rf $jz_pj_folder_name/gradle
-        rm -f $jz_pj_folder_name/gradlew*
-        find $jz_pj_folder_name -type f -name "*.gradle" -exec rm -f {} \;
-    elif [[ "$_build" == "gradle" ]]; then
-        rm -rf $jz_pj_folder_name/.mvn
-        rm -f $jz_pj_folder_name/mvnw*
-        find $jz_pj_folder_name -type f -name "pom.xml" -exec rm -f {} \;
-    fi
-}
-
 scaffold() {   
     if [[ "$jz_pj_folder_name" == *-st && ! -d $jz_pj_artifactid ]]; then
         log_err "Main project '$jz_pj_artifactid' not found."
@@ -66,8 +52,6 @@ scaffold() {
     if ! [[ -v JZ_CUSTOM_ROOT ]]; then
         touch .jeeez
     fi
-
-    delete_unused_build_files
     
     if [ -f $jz_pj_folder_name/.gitignore ]; then
         # Ignore .vscode-folder
