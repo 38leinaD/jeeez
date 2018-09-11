@@ -1,7 +1,7 @@
 version: '2.1'
 services:
   appsvr:
-    image: tomee:8-jre-7.0.4-plume
+    image: tomee:8-jre-7.1.0-plus
     ports:
      - "80:8080"
     volumes:
