@@ -18,3 +18,4 @@ docker run --rm --name appsvr -p 80:8080 -v $(pwd)/build/libs/template-artifacti
 #docker run --rm --name appsvr -p 80:8080 -v $(pwd)/build/libs/template-artifactid.war:/glassfish5/glassfish/domains/domain1/autodeploy/template-artifactid.war oracle/glassfish:5.0
 #docker run --rm --name appsvr -p 80:8080 -v $(pwd)/build/libs/template-artifactid.war:/opt/payara5/glassfish/domains/domain1/autodeploy/template-artifactid.war payara/server-full:5-SNAPSHOT
 #docker run --rm --name appsvr -p 80:9080 -p 443:9443 -v $(pwd)/build/libs/template-artifactid.war:/config/dropins/template-artifactid.war openliberty/open-liberty:javaee8
+#docker run --rm --name appsvr -p 80:8080 -v $(pwd)/build/libs/template-artifactid.war:/usr/local/tomee/webapps/template-artifactid.war tomee:8-jre-8.0.0-M1-plume
