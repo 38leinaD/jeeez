@@ -7,6 +7,10 @@
         <param-name>javax.faces.INTERPRET_EMPTY_STRING_SUBMITTED_VALUES_AS_NULL</param-name>
         <param-value>true</param-value>
     </context-param>
+    <context-param>
+        <param-name>facelets.SKIP_COMMENTS</param-name>
+        <param-value>true</param-value>
+    </context-param>
  	<welcome-file-list>
   		<welcome-file>index.xhtml</welcome-file>
  	</welcome-file-list>
