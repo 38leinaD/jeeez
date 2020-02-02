@@ -1,7 +1,7 @@
 version: '2.1'
 services:
   appsvr:
-    image: 38leinad/was-9
+    image: 38leinad/was:latest
     ports:
      - "80:9080"
      - "9060:9060"
