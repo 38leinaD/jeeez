@@ -6,16 +6,16 @@ source "$PLUGIN_PATH/common/functions"
 
 plugin_main_cmd() {
 
-    if [ ! -f $JZ_CACHE/payara-5.181.zip ]; then
+    if [ ! -f $JZ_CACHE/$JZ_PAYARA_DISTRIBUTION ]; then
         log_info "Downloading payara-5.181.zip to $JZ_CACHE ..."
-        curl https://s3-eu-west-1.amazonaws.com/payara.fish/Payara+Downloads/5.181/payara-5.181.zip -o $JZ_CACHE/payara-5.181.zip
+        curl $JZ_PAYARA_DOWNLOAD_URL/$JZ_PAYARA_DISTRIBUTION -o $JZ_CACHE/$JZ_PAYARA_DISTRIBUTION
     fi
 
     if [ -d payara5 ]; then
         log_err "A folder payara5 already exists. Maybe delete it and try again."
         exit 1
     fi
-    log_info "Extracting payara-5.181.zip to this directory ..."
+    log_info "Extracting $JZ_PAYARA_DISTRIBUTION to this directory ..."
     unzip $JZ_CACHE/payara-5.181.zip > /dev/null
 
     if [[ "${JZ_CUSTOM_RC}" == "" ]]; then

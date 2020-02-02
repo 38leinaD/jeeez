@@ -3,7 +3,7 @@
 image::https://api.travis-ci.org/38leinaD/jeeez.svg[]
 
 
-JEEEZ is a command-line scaffolding tool that gets you started on developing a Java EE application in seconds.
+JEEEZ is a command-line scaffolding tool that gets you started on developing a Jakarta EE application in seconds.
 It's just a set of Bash-scripts; so it should be running on most flavors of Linux, Unix, MacOS X and for Windows under Cygwin or MSYS.
 
 As the scaffold-projects come with Docker Compose files for most application-servers, it is helpful to have `docker` and `docker-compose` commands installed.
@@ -46,7 +46,7 @@ The main feature/command is `project:create`
 $ jz project:create
 Usage: jz project:create [groupid.]artifactid [OPTIONS]
 
-Create a Java EE project from a template
+Create a Jakarta EE project from a template
 
 Options:
     --jee-version=7|8 (default: 7)
@@ -57,14 +57,14 @@ Options:
 Example:
 $ jz project:create jz.myapp
     This will use some defaults (*) and create a project that...
-    - is Java EE 7-compliant (*),
+    - is Jakarta EE 7-compliant (*),
     - packages as a WAR archive (*),
     - has group-id "jz",
     - has artifact-id "myapp",
     - and builds with Gradle (*)
 ----
 
-Now, lets scaffold, build and deploy a Java EE app.
+Now, lets scaffold, build and deploy a Jakarta EE app.
 
 === Gradle
 
@@ -112,18 +112,17 @@ $ cd myapp-st; ./gradlew systemTest -PcomposeFile=docker-compose.wlp.yml
 
 Docker compose files are provided for the following application-servers:
 
-* Wildfly 13
-* TomEE 7
-* Websphere Liberty 18
+* Wildfly 19
+* TomEE 8
+* Open Liberty 20
 * Websphere Traditional 9
-* Glassfish 5
 * Payara 5
 
 WARN: The Maven template currently only supports a seperate system-test project. The Gradle war-template has the system-tests included already.
 
 === EARs
 
-EAR-files have grown unpopular in modern Java EE but I sometimes still need to test Java EE features with EAR-packaged applications.
+EAR-files have grown unpopular in modern Jakarta EE but I sometimes still need to test Jakarta EE features with EAR-packaged applications.
 That's why you can also generate them:
 
 ----
@@ -140,17 +139,14 @@ $ jz project:create de.dplatz.myapp --ear
 The following combinations of application-server and specifications are supported/tested.
 
 |===
-|                             | Java EE     | Microprofile  
-| Wildfly 14                  | 8           | ?    
-| TomEE 7                     | 7           | 1.2     
-| Websphere Liberty 18        | 8           | 1.3   
+|                             | Jakarta EE     | Microprofile  
+| Wildfly 19                  | 8           | 3.2    
+| TomEE 7                     | 8           | 2.0.1     
+| Open Liberty 18        | 8           | 3
 | Websphere Traditional 9     | 7           |  - 
-| Glassfish 5                 | 8           |  - 
-| Payara 5                    | 8           | 1.3   
-| KumuluzEE (todo)            | 7           | 1.2
+| Payara 5                    | 8           | 2.1 
 |===
 
 == Todos
 
-* Support for Java EE 8 (`--jee-version` flag is not implemted yet)
-* Support for MicroProfile
+None
