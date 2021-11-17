@@ -1,5 +1,5 @@
 apply plugin: 'war'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'eclipse-wtp'
 apply from: 'build.systemTest.gradle'
 
@@ -18,8 +18,8 @@ dependencies {
     //providedCompile 'org.eclipse.microprofile:microprofile:1.3'
     //compile 'org.primefaces:primefaces:6.2'
 
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.mockito:mockito-core:2.10.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-core:2.10.0'
 }
 
 test {

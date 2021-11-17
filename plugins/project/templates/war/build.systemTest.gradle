@@ -11,10 +11,10 @@ apply plugin: com.avast.gradle.dockercompose.DockerComposePlugin
 
 dependencies {
     // jax-rs client
-    testCompile 'org.glassfish.jersey.core:jersey-client:2.26'
-	testCompile 'org.glassfish.jersey.inject:jersey-hk2:2.26'
-	testCompile 'org.glassfish.jersey.media:jersey-media-json-processing:2.26'
-	testCompile 'org.glassfish.jersey.media:jersey-media-json-binding:2.26'
+    testImplementation 'org.glassfish.jersey.core:jersey-client:2.26'
+	testImplementation 'org.glassfish.jersey.inject:jersey-hk2:2.26'
+	testImplementation 'org.glassfish.jersey.media:jersey-media-json-processing:2.26'
+	testImplementation 'org.glassfish.jersey.media:jersey-media-json-binding:2.26'
 }
 
 
